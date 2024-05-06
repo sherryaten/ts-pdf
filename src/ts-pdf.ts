@@ -195,9 +195,12 @@ export class TsPdfViewer {
     const previewWidth = options.previewWidth || 100;
     const minScale = options.minScale || 0.25;
     const maxScale = options.maxScale || 4;
-
-    this._shadowRoot = this._outerContainer.attachShadow({mode: "open"});
-    this._shadowRoot.innerHTML = styles + mainHtml;     
+    if(!!this._outerContainer.shadowRoot == false){
+      this._shadowRoot = this._outerContainer.attachShadow({mode: "open"});     
+    }else{
+      this._shadowRoot = this._outerContainer.shadowRoot
+    }
+    this._shadowRoot.innerHTML = styles + mainHtml;   
     this._mainContainer = this._shadowRoot.querySelector("div#main-container") as HTMLDivElement;
 
     this._eventService = new EventService(this._mainContainer);
