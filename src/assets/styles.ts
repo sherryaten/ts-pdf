@@ -192,6 +192,16 @@ export const styles = /*html*/`
   .opaque .comparison-area-image {
     opacity: 1;
   }
+.button-annotation-options{
+    cursor: default;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.1s ease-in, transform 0s linear 0.1s;
+}
+.button-annotation-options-show{
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
 
 </style>
 `;

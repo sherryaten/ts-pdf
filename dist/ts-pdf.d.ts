@@ -1048,6 +1048,7 @@ declare class TsPdfViewer {
     private annotatorUndo;
     private annotatorClear;
     private annotatorSave;
+    private annotatorOptions;
     private onCustomStampChanged;
     private onAnnotationChange;
     private onAnnotatorDataChanged;

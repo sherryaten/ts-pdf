@@ -98,6 +98,7 @@ export class AnnotatorService {
     this._docService.eventService.addListener(pagesRenderedEvent, this.onPagesRendered);   
 
     this._viewer.container.addEventListener("contextmenu", this.onContextMenu);
+    
     const viewerRObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       this._contextMenu?.hide();
     });

@@ -2,9 +2,11 @@
 import { GlobalWorkerOptions } from "pdfjs-dist";
 
 import { clamp } from "mathador";
-import { DomUtils, EventService, Spinner, CustomStampCreationInfo,
-  customStampEvent, CustomStampEvent, CustomStampEventDetail, 
-  CustomStampService } from "ts-viewers-core";
+import {
+  DomUtils, EventService, Spinner, CustomStampCreationInfo,
+  customStampEvent, CustomStampEvent, CustomStampEventDetail,
+  CustomStampService
+} from "ts-viewers-core";
 
 import { mainHtml, passwordDialogHtml } from "./assets/index.html";
 import { styles } from "./assets/styles";
@@ -12,23 +14,31 @@ import { styles } from "./assets/styles";
 import { getSelectionInfosFromSelection } from "./common/text-selection";
 import { AnnotationDto } from "./common/annotation";
 
-import { PageService, currentPageChangeEvent, 
-  CurrentPageChangeEvent } from "./services/page-service";
-import { DocumentService, annotChangeEvent, AnnotEvent, 
-  AnnotEventDetail, DocServiceStateChangeEvent, 
-  docServiceStateChangeEvent } from "./services/document-service";
+import {
+  PageService, currentPageChangeEvent,
+  CurrentPageChangeEvent
+} from "./services/page-service";
+import {
+  DocumentService, annotChangeEvent, AnnotEvent,
+  AnnotEventDetail, DocServiceStateChangeEvent,
+  docServiceStateChangeEvent
+} from "./services/document-service";
 import { AnnotatorService, AnnotatorServiceMode } from "./services/annotator-service";
 import { ModeService, ViewerMode, viewerModes } from "./services/mode-service";
-import { DocChangeEvent, docChangeEvent, 
-  DocManagerService, DocType } from "./services/doc-manager-service";
+import {
+  DocChangeEvent, docChangeEvent,
+  DocManagerService, DocType
+} from "./services/doc-manager-service";
 
 import { Viewer } from "./components/viewer";
 import { Previewer } from "./components/previewer";
 
-import { annotatorDataChangeEvent, AnnotatorDataChangeEvent, 
-  annotatorTypes, 
-  TextSelectionChangeEvent, 
-  textSelectionChangeEvent} from "./annotator/annotator"; 
+import {
+  annotatorDataChangeEvent, AnnotatorDataChangeEvent,
+  annotatorTypes,
+  TextSelectionChangeEvent,
+  textSelectionChangeEvent
+} from "./annotator/annotator";
 
 declare global {
   interface HTMLElementEventMap {
@@ -64,7 +74,7 @@ export interface TsPdfViewerOptions {
    * can be used for managing custom stamp library
    */
   customStampChangeCallback?: (detail: CustomStampEventDetail) => void;
-  
+
   /**
    * number of pages that should be prerendered outside view 
    * higher values can reduce performance and will increase memory use
@@ -118,16 +128,16 @@ export class TsPdfViewer {
   private readonly _outerContainer: HTMLDivElement;
   private readonly _shadowRoot: ShadowRoot;
   private readonly _mainContainer: HTMLDivElement;
-  
+
   private readonly _eventService: EventService;
   private readonly _modeService: ModeService;
-  private readonly _docManagerService: DocManagerService; 
+  private readonly _docManagerService: DocManagerService;
   private readonly _pageService: PageService;
   private readonly _customStampsService: CustomStampService;
-  
+
   private get _docService(): DocumentService {
     return this._docManagerService?.docService;
-  }  
+  }
 
   private readonly _spinner: Spinner;
   private readonly _viewer: Viewer;
@@ -154,9 +164,9 @@ export class TsPdfViewer {
 
   private _mainContainerRObserver: ResizeObserver;
   private _panelsHidden: boolean;
-  
+
   /**common timers */
-  private _timers = {    
+  private _timers = {
     hidePanels: 0,
   };
   //#endregion
@@ -174,7 +184,7 @@ export class TsPdfViewer {
     } else {
       this._outerContainer = container;
     }
-    
+
     if (!options.workerSource) {
       throw new Error("Worker source path not defined");
     }
@@ -190,32 +200,32 @@ export class TsPdfViewer {
     this._comparableFileCloseAction = options.comparableFileCloseAction;
     this._annotChangeCallback = options.annotChangeCallback;
     this._customStampChangeCallback = options.customStampChangeCallback;
-    
+
     const visibleAdjPages = options.visibleAdjPages || 0;
     const previewWidth = options.previewWidth || 100;
     const minScale = options.minScale || 0.25;
     const maxScale = options.maxScale || 4;
-    if(!!this._outerContainer.shadowRoot == false){
-      this._shadowRoot = this._outerContainer.attachShadow({mode: "open"});     
-    }else{
+    if (!!this._outerContainer.shadowRoot == false) {
+      this._shadowRoot = this._outerContainer.attachShadow({ mode: "open" });
+    } else {
       this._shadowRoot = this._outerContainer.shadowRoot
     }
-    this._shadowRoot.innerHTML = styles + mainHtml;   
+    this._shadowRoot.innerHTML = styles + mainHtml;
     this._mainContainer = this._shadowRoot.querySelector("div#main-container") as HTMLDivElement;
 
     this._eventService = new EventService(this._mainContainer);
-    this._modeService = new ModeService({disabledModes: options.disabledModes || []});
+    this._modeService = new ModeService({ disabledModes: options.disabledModes || [] });
     this._docManagerService = new DocManagerService(this._eventService);
     this._pageService = new PageService(this._eventService, this._modeService, this._docManagerService,
-      {previewCanvasWidth: previewWidth, visibleAdjPages: visibleAdjPages});
+      { previewCanvasWidth: previewWidth, visibleAdjPages: visibleAdjPages });
 
     this._customStampsService = new CustomStampService(this._mainContainer, this._eventService);
     this._customStampsService.importCustomStamps(options.customStamps);
 
     this._spinner = new Spinner();
     this._previewer = new Previewer(this._pageService, this._shadowRoot.querySelector("#previewer"));
-    this._viewer = new Viewer(this._modeService, this._pageService, this._shadowRoot.querySelector("#viewer"), 
-      {minScale: minScale, maxScale: maxScale}); 
+    this._viewer = new Viewer(this._modeService, this._pageService, this._shadowRoot.querySelector("#viewer"),
+      { minScale: minScale, maxScale: maxScale });
     this._viewer.container.addEventListener("contextmenu", e => e.preventDefault());
 
     this.initMainContainerEventHandlers();
@@ -231,38 +241,38 @@ export class TsPdfViewer {
     this._eventService.addListener(customStampEvent, this.onCustomStampChanged);
     this._eventService.addListener(docServiceStateChangeEvent, this.onDocServiceStateChange);
 
-    document.addEventListener("selectionchange", this.onTextSelectionChange); 
-    
+    document.addEventListener("selectionchange", this.onTextSelectionChange);
+
     this._mainContainer.addEventListener("keydown", this.onViewerKeyDown);
   }
 
   //#region public API
   /**free resources to let GC clean them to avoid memory leak */
   destroy() {
-    this._annotChangeCallback = null;   
+    this._annotChangeCallback = null;
 
     this._annotatorService?.destroy();
 
-    this._docManagerService.destroy(); 
+    this._docManagerService.destroy();
     this._viewer.destroy();
     this._previewer.destroy();
-    this._pageService.destroy();    
+    this._pageService.destroy();
 
     this._customStampsService.destroy();
     this._eventService.destroy();
 
     this._mainContainerRObserver?.disconnect();
     this._shadowRoot.innerHTML = "";
-    
-    document.removeEventListener("selectionchange", this.onTextSelectionChange); 
+
+    document.removeEventListener("selectionchange", this.onTextSelectionChange);
   }
-  
+
   /**
    * open PDF file
    * @param src file URI, base64 string, Blob instance, byte array
    * @param fileName 
    */
-  async openPdfAsync(src: string | Blob | Uint8Array, 
+  async openPdfAsync(src: string | Blob | Uint8Array,
     fileName?: string): Promise<void> {
     await this.openDocAsync("main", src, fileName);
   }
@@ -270,7 +280,7 @@ export class TsPdfViewer {
   async closePdfAsync(): Promise<void> {
     await this.closeDocAsync("main");
   }
-  
+
   /**
    * open PDF file for the main file to be compared with.
    * does nothing if the main file hasn't been not loaded yet.
@@ -278,7 +288,7 @@ export class TsPdfViewer {
    * @param src file URI, base64 string, Blob instance, byte array
    * @param fileName 
    */
-  async openComparedPdfAsync(src: string | Blob | Uint8Array, 
+  async openComparedPdfAsync(src: string | Blob | Uint8Array,
     fileName?: string): Promise<void> {
     if (!this._docManagerService.docLoaded) {
       return;
@@ -295,7 +305,7 @@ export class TsPdfViewer {
     await this.closeDocAsync("compared");
     this.setMode();
   }
-  
+
   /**
    * import previously exported TsPdf annotations
    * @param dtos annotation data transfer objects
@@ -304,10 +314,10 @@ export class TsPdfViewer {
     try {
       await this._docService?.appendSerializedAnnotationsAsync(dtos);
     } catch (e) {
-      console.log(`Error while importing annotations: ${e.message}`);      
+      console.log(`Error while importing annotations: ${e.message}`);
     }
   }
-  
+
   /**
    * import previously exported serialized TsPdf annotations
    * @param json serialized annotation data transfer objects
@@ -317,10 +327,10 @@ export class TsPdfViewer {
       const dtos: AnnotationDto[] = JSON.parse(json);
       await this._docService?.appendSerializedAnnotationsAsync(dtos);
     } catch (e) {
-      console.log(`Error while importing annotations: ${e.message}`);      
+      console.log(`Error while importing annotations: ${e.message}`);
     }
   }
-  
+
   /**
    * export TsPdf annotations as data transfer objects
    * @returns 
@@ -328,8 +338,8 @@ export class TsPdfViewer {
   async exportAnnotationsAsync(): Promise<AnnotationDto[]> {
     const dtos = await this._docService?.serializeAnnotationsAsync(true);
     return dtos;
-  }  
-  
+  }
+
   /**
    * export TsPdf annotations as a serialized array of data transfer objects
    * @returns 
@@ -339,23 +349,23 @@ export class TsPdfViewer {
     return JSON.stringify(dtos);
   }
 
-  importCustomStamps(customStamps: CustomStampCreationInfo[]) {  
+  importCustomStamps(customStamps: CustomStampCreationInfo[]) {
     try {
       this._customStampsService.importCustomStamps(customStamps);
     } catch (e) {
-      console.log(`Error while importing custom stamps: ${e.message}`);      
-    }   
+      console.log(`Error while importing custom stamps: ${e.message}`);
+    }
   }
-  
-  importCustomStampsFromJson(json: string) { 
+
+  importCustomStampsFromJson(json: string) {
     try {
-      const customStamps: CustomStampCreationInfo[] = JSON.parse(json); 
+      const customStamps: CustomStampCreationInfo[] = JSON.parse(json);
       this._customStampsService.importCustomStamps(customStamps);
     } catch (e) {
-      console.log(`Error while importing custom stamps: ${e.message}`);      
-    } 
+      console.log(`Error while importing custom stamps: ${e.message}`);
+    }
   }
-  
+
   /**
    * export TsPdf custom stamps
    * @returns 
@@ -363,8 +373,8 @@ export class TsPdfViewer {
   exportCustomStamps(): CustomStampCreationInfo[] {
     const customStamps = this._customStampsService.getCustomStamps();
     return customStamps;
-  }  
-  
+  }
+
   /**
    * export TsPdf custom stamps as a serialized array of the corresponding objects
    * @returns 
@@ -378,7 +388,7 @@ export class TsPdfViewer {
    * get the current pdf file with baked TsPdf annotations as Blob
    * @returns 
    */
-  async getCurrentPdfAsync(): Promise<Blob> {    
+  async getCurrentPdfAsync(): Promise<Blob> {
     const data = await this._docService?.getDataWithUpdatedAnnotationsAsync();
     if (!data?.length) {
       return null;
@@ -398,11 +408,11 @@ export class TsPdfViewer {
     if (!selection.rangeCount) {
       return;
     }
-    
+
     if (this._eventService.hasListenersForKey(textSelectionChangeEvent)) {
       // get selection text and coordinates
       const selectionInfos = getSelectionInfosFromSelection(selection);
-      this._eventService.dispatchEvent(new TextSelectionChangeEvent({selectionInfos}));
+      this._eventService.dispatchEvent(new TextSelectionChangeEvent({ selectionInfos }));
     }
   };
   //#endregion
@@ -419,7 +429,7 @@ export class TsPdfViewer {
       throw e;
     } finally {
       this._spinner.hide();
-    }    
+    }
   }
 
   private async closeDocAsync(type: DocType): Promise<void> {
@@ -429,15 +439,15 @@ export class TsPdfViewer {
   //#endregion
 
   //#region GUI initialization methods
-  private initMainContainerEventHandlers() { 
-    const mcResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {    
-      const {width} = this._mainContainer.getBoundingClientRect();
-      if (width < 721) {      
+  private initMainContainerEventHandlers() {
+    const mcResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      const { width } = this._mainContainer.getBoundingClientRect();
+      if (width < 721) {
         this._mainContainer.classList.add("mobile");
-      } else {      
+      } else {
         this._mainContainer.classList.remove("mobile");
       }
-      if (width < 400) {        
+      if (width < 400) {
         this._mainContainer.classList.add("compact");
       } else {
         this._mainContainer.classList.remove("compact");
@@ -447,12 +457,12 @@ export class TsPdfViewer {
     this._mainContainerRObserver = mcResizeObserver;
     this._mainContainer.addEventListener("pointermove", this.onMainContainerPointerMove);
   }
-  
+
   /**add event listemers to interface general buttons */
   private initViewControls() {
     const paginatorInput = this._shadowRoot.getElementById("paginator-input") as HTMLInputElement;
     paginatorInput.addEventListener("input", this.onPaginatorInput);
-    paginatorInput.addEventListener("change", this.onPaginatorChange);    
+    paginatorInput.addEventListener("change", this.onPaginatorChange);
     this._shadowRoot.querySelector("#paginator-prev")
       .addEventListener("click", this.onPaginatorPrevClick);
     this._shadowRoot.querySelector("#paginator-next")
@@ -473,7 +483,11 @@ export class TsPdfViewer {
       .addEventListener("click", this.onZoomFitPageClick);
 
     this._shadowRoot.querySelector("#toggle-previewer")
-      .addEventListener("click", this.onPreviewerToggleClick);  
+      .addEventListener("click", this.onPreviewerToggleClick);
+      const togglePreview = this._shadowRoot.getElementById('toggle-previewer');
+    if(togglePreview){
+      togglePreview.click();      
+    }
   }
 
   private initFileButtons() {
@@ -494,7 +508,7 @@ export class TsPdfViewer {
     } else {
       saveButton.remove();
     }
-    
+
     if (this._fileButtons.includes("close")) {
       closeButton.addEventListener("click", this._fileCloseAction || this.onCloseFileButtonClick);
     } else {
@@ -508,14 +522,14 @@ export class TsPdfViewer {
       this._comparableFileInput = this._shadowRoot
         .getElementById("open-comparable-file-input") as HTMLInputElement;
       this._comparableFileInput.addEventListener("change", this.onComparableFileInput);
-      comparableOpenButton.addEventListener("click", 
+      comparableOpenButton.addEventListener("click",
         this._comparableFileOpenAction || this.onComparableOpenFileButtonClick);
     } else {
       comparableOpenButton.remove();
     }
 
     if (this._comparableFileButtons.includes("close")) {
-      comparableCloseButton.addEventListener("click", 
+      comparableCloseButton.addEventListener("click",
         this._comparableFileCloseAction || this.onComparableCloseFileButtonClick);
     } else {
       comparableCloseButton.remove();
@@ -524,17 +538,17 @@ export class TsPdfViewer {
 
   //#region default file buttons actions
   private onFileInput = () => {
-    const files = this._fileInput.files;    
+    const files = this._fileInput.files;
     if (files.length === 0) {
       return;
     }
 
-    this.openDocAsync("main", files[0], files[0].name); 
+    this.openDocAsync("main", files[0], files[0].name);
 
     this._fileInput.value = null;
   };
 
-  private onOpenFileButtonClick = () => {    
+  private onOpenFileButtonClick = () => {
     this._fileInput.click();
   };
 
@@ -547,16 +561,16 @@ export class TsPdfViewer {
     // DEBUG
     // this.openPdfAsync(blob);
 
-    DomUtils.downloadFile(blob, this._docManagerService?.fileName 
+    DomUtils.downloadFile(blob, this._docManagerService?.fileName
       || `file_${new Date().toISOString()}.pdf`);
   };
-  
+
   private onCloseFileButtonClick = () => {
     this.closeDocAsync("main");
   };
 
   private onComparableFileInput = () => {
-    const files = this._comparableFileInput.files;    
+    const files = this._comparableFileInput.files;
     if (files.length === 0) {
       return;
     }
@@ -566,7 +580,7 @@ export class TsPdfViewer {
     this._comparableFileInput.value = null;
   };
 
-  private onComparableOpenFileButtonClick = () => {    
+  private onComparableOpenFileButtonClick = () => {
     this._comparableFileInput.click();
   };
 
@@ -579,28 +593,28 @@ export class TsPdfViewer {
     const modeButtons = this._shadowRoot.querySelectorAll("*[id^=\"button-mode-\"]");
     const enabledModes = this._modeService.enabledModes;
     modeButtons.forEach(x => {
-      const mode = /button-mode-(.+)/.exec(x.id)[1] as ViewerMode;        
+      const mode = /button-mode-(.+)/.exec(x.id)[1] as ViewerMode;
       if (enabledModes.includes(mode)) {
         x.addEventListener("click", this.onViewerModeButtonClick);
       } else {
         x.classList.add("disabled");
       }
-    });    
+    });
   }
 
   private initAnnotationButtons() {
     // mode buttons
     this._shadowRoot.querySelectorAll("*[id^=\"button-annotation-mode-\"]")
-      .forEach(x => {        
+      .forEach(x => {
         x.addEventListener("click", this.onAnnotationModeButtonClick);
       });
 
     // select buttons
     this._shadowRoot.querySelector("#button-annotation-edit-text")
-      .addEventListener("click", this.onAnnotationEditTextButtonClick);   
+      .addEventListener("click", this.onAnnotationEditTextButtonClick);
     this._shadowRoot.querySelector("#button-annotation-delete")
-      .addEventListener("click", this.onAnnotationDeleteButtonClick); 
-      
+      .addEventListener("click", this.onAnnotationDeleteButtonClick);
+
     // annotator buttons
     this._shadowRoot.querySelectorAll(".button-annotation-undo")
       .forEach(x => x.addEventListener("click", this.annotatorUndo));
@@ -608,9 +622,10 @@ export class TsPdfViewer {
       .forEach(x => x.addEventListener("click", this.annotatorClear));
     this._shadowRoot.querySelectorAll(".button-annotation-save")
       .forEach(x => x.addEventListener("click", this.annotatorSave));
-
+    this._shadowRoot.querySelectorAll(".button-annotation-options")
+      .forEach(x => x.addEventListener("click", this.annotatorOptions));
     this._shadowRoot.querySelector("#button-command-undo")
-      .addEventListener("click", this.docServiceUndo);      
+      .addEventListener("click", this.docServiceUndo);
   }
   //#endregion
 
@@ -633,7 +648,7 @@ export class TsPdfViewer {
   }
 
   private onViewerModeButtonClick = (e: Event) => {
-    const parentButton = (<Element>e.target).closest("*[id^=\"button-mode-\"]");    
+    const parentButton = (<Element>e.target).closest("*[id^=\"button-mode-\"]");
     if (!parentButton) {
       return;
     }
@@ -650,11 +665,11 @@ export class TsPdfViewer {
   private onZoomInClick = () => {
     this._viewer.zoomIn();
   };
-  
+
   private onZoomFitViewerClick = () => {
     this._viewer.zoomFitViewer();
   };
-  
+
   private onZoomFitPageClick = () => {
     this._viewer.zoomFitPage();
   };
@@ -664,7 +679,7 @@ export class TsPdfViewer {
   private onRotateCounterClockwiseClick = () => {
     this.rotateCounterClockwise();
   };
-  
+
   private onRotateClockwiseClick = () => {
     this.rotateClockwise();
   };
@@ -692,17 +707,17 @@ export class TsPdfViewer {
       event.target.value = event.target.value.replace(/[^\d]+/g, "");
     }
   };
-  
+
   private onPaginatorChange = (event: Event) => {
     if (event.target instanceof HTMLInputElement) {
       const pageNumber = Math.max(Math.min(+event.target.value, this._docManagerService.pageCount), 1);
-      if (pageNumber + "" !== event.target.value) {        
+      if (pageNumber + "" !== event.target.value) {
         event.target.value = pageNumber + "";
       }
       this._pageService.requestSetCurrentPageIndex(pageNumber - 1);
     }
   };
-  
+
   private onPaginatorPrevClick = () => {
     this.moveToPrevPage();
   };
@@ -710,29 +725,29 @@ export class TsPdfViewer {
   private onPaginatorNextClick = () => {
     this.moveToNextPage();
   };
-  
+
   private onCurrentPagesChanged = (event: CurrentPageChangeEvent) => {
-    const {newIndex} = event.detail;
+    const { newIndex } = event.detail;
     (<HTMLInputElement>this._shadowRoot.getElementById("paginator-input")).value = newIndex + 1 + "";
   };
 
-  private moveToPrevPage() {    
+  private moveToPrevPage() {
     if (!this._docService) {
       return;
     }
     const pageIndex = clamp(this._pageService.currentPageIndex - 1, 0, this._pageService.length - 1);
     this._pageService.requestSetCurrentPageIndex(pageIndex);
   }
-  
-  private moveToNextPage() {  
+
+  private moveToNextPage() {
     if (!this._docService) {
       return;
-    }   
+    }
     const pageIndex = clamp(this._pageService.currentPageIndex + 1, 0, this._pageService.length - 1);
     this._pageService.requestSetCurrentPageIndex(pageIndex);
   }
   //#endregion
-  
+
   //#region annotations
   private annotatorUndo = () => {
     this._annotatorService.annotator?.undo();
@@ -741,11 +756,25 @@ export class TsPdfViewer {
   private annotatorClear = () => {
     this._annotatorService.annotator?.clear();
   };
-  
+
   private annotatorSave = () => {
     this._annotatorService.annotator?.saveAnnotationAsync();
   };
-  
+
+  private annotatorOptions = () => {
+    // var ev = document.createEvent('HTMLEvents');
+    // ev.clientX = containerWidth;
+    // ev.clientY = 100;
+    // ev.initEvent('contextmenu', true, false);
+    const customEvent = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 0, // Specify the X coordinate
+      clientY: (window.screen.height/3)*2  // Specify the Y coordinate
+    });
+    console.log(this._viewer.container.dispatchEvent(customEvent));
+  };
+
   private onCustomStampChanged = (e: CustomStampEvent) => {
     this.setAnnotationMode("stamp");
 
@@ -761,8 +790,8 @@ export class TsPdfViewer {
     }
 
     const annotations = e.detail.annotations;
-    switch(e.detail.type) {
-      case "focus":      
+    switch (e.detail.type) {
+      case "focus":
         if (annotations?.length) {
           this._mainContainer.classList.add("annotation-focused");
         } else {
@@ -785,7 +814,7 @@ export class TsPdfViewer {
             .textContent = "";
         }
         break;
-      case "select":      
+      case "select":
         if (annotations?.length) {
           this._mainContainer.classList.add("annotation-selected");
           this._mainContainer.classList.add("annotation-focused"); // for touch devices
@@ -810,7 +839,7 @@ export class TsPdfViewer {
         // so just wait for the 'render' event
         break;
     }
-    
+
     // execute change callback if present
     if (this._annotChangeCallback) {
       this._annotChangeCallback(e.detail);
@@ -839,14 +868,31 @@ export class TsPdfViewer {
     if (!this._annotatorService || !mode) {
       return;
     }
-
+    console.log("setAnnotationMode: ", mode);
     const prevMode = this._annotatorService.mode;
     this._shadowRoot.querySelector(`#button-annotation-mode-${prevMode}`)?.classList.remove("on");
     this._shadowRoot.querySelector(`#button-annotation-mode-${mode}`)?.classList.add("on");
 
+    const menus = this._shadowRoot.querySelectorAll('.button-annotation-options');
+    console.log(menus);
+    menus.forEach(menu => {
+      (menu as HTMLElement)?.classList.remove("button-annotation-options-show")
+    });
+    const options = this._shadowRoot.querySelector(`#button-annotation-${mode}-options`);
+    console.log(options);
+    if (options) {
+      (options as HTMLElement)?.classList.add("button-annotation-options-show")
+    }
+    
+    // const currentPage = this._pageService.getCurrentPage();
+    // console.log("currentPage",currentPage);
+    // if(currentPage?.index == 0){
+    //   this._pageService.requestSetCurrentPageIndex(currentPage?.index+1);
+    //   setTimeout(() => {this._pageService.requestSetCurrentPageIndex(currentPage?.index)}, 800);
+    // }
     this._annotatorService.mode = mode;
   }
-   
+
   private onAnnotationEditTextButtonClick = async () => {
     const initialText = this._docService?.getSelectedAnnotationTextContent();
     const text = await this._viewer.showTextDialogAsync(initialText);
@@ -860,8 +906,8 @@ export class TsPdfViewer {
     this._docService?.removeSelectedAnnotation();
   };
 
-  private onAnnotationModeButtonClick = (e: Event) => {    
-    const parentButton = (<Element>e.target).closest("*[id^=\"button-annotation-mode-\"]");    
+  private onAnnotationModeButtonClick = (e: Event) => {
+    const parentButton = (<Element>e.target).closest("*[id^=\"button-annotation-mode-\"]");
     if (!parentButton) {
       return;
     }
@@ -872,8 +918,8 @@ export class TsPdfViewer {
 
   //#region show/hide panels
   private onMainContainerPointerMove = (event: PointerEvent) => {
-    const {clientX, clientY} = event;
-    const {x: rectX, y: rectY, width, height} = this._mainContainer.getBoundingClientRect();
+    const { clientX, clientY } = event;
+    const { x: rectX, y: rectY, width, height } = this._mainContainer.getBoundingClientRect();
 
     const l = clientX - rectX;
     const t = clientY - rectY;
@@ -899,7 +945,7 @@ export class TsPdfViewer {
         this._panelsHidden = true;
         this._timers.hidePanels = null;
       }, 5000);
-    }      
+    }
   }
 
   private showPanels() {
@@ -907,7 +953,7 @@ export class TsPdfViewer {
       clearTimeout(this._timers.hidePanels);
       this._timers.hidePanels = null;
     }
-    if (this._panelsHidden) {        
+    if (this._panelsHidden) {
       this._mainContainer.classList.remove("hide-panels");
       this._panelsHidden = false;
     }
@@ -922,32 +968,32 @@ export class TsPdfViewer {
   private docServiceUndo = () => {
     this._docService?.undoAsync();
   };
-  
+
   private onDocChangeAsync = async (e: DocChangeEvent) => {
     if (e.detail.type === "main") {
       if (e.detail.action === "open") {
         this.setMode();
-  
+
         // load pages from the document
         await this.refreshPagesAsync();
-    
+
         // create an annotation builder and set its mode to 'select'
-        this._annotatorService = new AnnotatorService(this._docService, 
+        this._annotatorService = new AnnotatorService(this._docService,
           this._pageService, this._customStampsService, this._viewer);
         this.setAnnotationMode("select");
-    
-        this._mainContainer.classList.remove("disabled");        
-      } else if (e.detail.action === "close") {        
+
+        this._mainContainer.classList.remove("disabled");
+      } else if (e.detail.action === "close") {
         this._mainContainer.classList.add("disabled");
         // remove unneeded classes from the main container
         this._mainContainer.classList.remove("annotation-focused");
         this._mainContainer.classList.remove("annotation-selected");
-    
+
         // reset viewer state to default
         this.setMode();
-    
+
         this._annotatorService?.destroy();
-    
+
         await this.refreshPagesAsync();
         this.showPanels();
       }
@@ -968,7 +1014,7 @@ export class TsPdfViewer {
   private onDocServiceStateChange = (e: DocServiceStateChangeEvent) => {
     if (e.detail.undoableCount) {
       this._mainContainer.classList.add("undoable-commands");
-    } else {      
+    } else {
       this._mainContainer.classList.remove("undoable-commands");
     }
   };
@@ -993,7 +1039,7 @@ export class TsPdfViewer {
       this._mainContainer.classList.remove("hide-previewer");
       this._shadowRoot.querySelector("div#toggle-previewer").classList.add("on");
       this._previewer.show();
-    } else {      
+    } else {
       this._mainContainer.classList.add("hide-previewer");
       this._shadowRoot.querySelector("div#toggle-previewer").classList.remove("on");
       this._previewer.hide();
@@ -1006,7 +1052,7 @@ export class TsPdfViewer {
       const dialog = DomUtils.htmlToElements(passwordDialogHtml)[0];
       this._mainContainer.append(dialog);
 
-      let value = "";      
+      let value = "";
       const input = dialog.querySelector(".password-input") as HTMLInputElement;
       input.placeholder = "Enter password...";
       input.addEventListener("change", () => value = input.value);
@@ -1025,7 +1071,7 @@ export class TsPdfViewer {
           cancel();
         }
       });
-      
+
       dialog.querySelector(".password-ok").addEventListener("click", ok);
       dialog.querySelector(".password-cancel").addEventListener("click", cancel);
     });
@@ -1150,5 +1196,7 @@ export class TsPdfViewer {
   //#endregion
 }
 
-export {AnnotationDto, AnnotEvent, AnnotEventDetail, 
-  CustomStampCreationInfo, CustomStampEventDetail, ViewerMode as TsPdfViewerMode};
+export {
+  AnnotationDto, AnnotEvent, AnnotEventDetail,
+  CustomStampCreationInfo, CustomStampEventDetail, ViewerMode as TsPdfViewerMode
+};
