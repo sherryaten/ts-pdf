@@ -484,10 +484,7 @@ export class TsPdfViewer {
 
     this._shadowRoot.querySelector("#toggle-previewer")
       .addEventListener("click", this.onPreviewerToggleClick);
-      const togglePreview = this._shadowRoot.getElementById('toggle-previewer');
-    if(togglePreview){
-      togglePreview.click();      
-    }
+     this.togglePreviewer()
   }
 
   private initFileButtons() {
