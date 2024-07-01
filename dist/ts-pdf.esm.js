@@ -31017,13 +31017,14 @@ class TsPdfViewer {
             (_a = this._annotatorService.annotator) === null || _a === void 0 ? void 0 : _a.saveAnnotationAsync();
         };
         this.annotatorOptions = () => {
+            console.log("annotatorOptions this._viewer", this._viewer);
             const customEvent = new MouseEvent('contextmenu', {
                 bubbles: true,
                 cancelable: true,
-                clientX: 0,
-                clientY: (window.screen.height / 3) * 2
+                clientX: (this._viewer.container.clientWidth),
+                clientY: (this._viewer.container.clientHeight / 2)
             });
-            console.log(this._viewer.container.dispatchEvent(customEvent));
+            this._viewer.container.dispatchEvent(customEvent);
         };
         this.onCustomStampChanged = (e) => {
             this.setAnnotationMode("stamp");

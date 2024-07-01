@@ -759,6 +759,7 @@ export class TsPdfViewer {
   };
 
   private annotatorOptions = () => {
+    // console.log("annotatorOptions this._viewer",this._viewer);
     // var ev = document.createEvent('HTMLEvents');
     // ev.clientX = containerWidth;
     // ev.clientY = 100;
@@ -766,10 +767,10 @@ export class TsPdfViewer {
     const customEvent = new MouseEvent('contextmenu', {
       bubbles: true,
       cancelable: true,
-      clientX: 0, // Specify the X coordinate
-      clientY: (window.screen.height/3)*2  // Specify the Y coordinate
+      clientX: (this._viewer.container.clientWidth), // Specify the X coordinate
+      clientY: (this._viewer.container.clientHeight/2)  // Specify the Y coordinate
     });
-    console.log(this._viewer.container.dispatchEvent(customEvent));
+    this._viewer.container.dispatchEvent(customEvent);
   };
 
   private onCustomStampChanged = (e: CustomStampEvent) => {
