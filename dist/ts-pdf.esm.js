@@ -25856,8 +25856,24 @@ class DocumentService {
             }
         });
     }
+    getAnnotationDictAsync(dto) {
+        return __awaiter$n(this, void 0, void 0, function* () {
+            return yield AnnotationParser.ParseAnnotationFromDtoAsync(dto, this._fontMap);
+        });
+    }
     removeAnnotationFromPage(annotation) {
         this.removeAnnotation(annotation, true);
+    }
+    removeAnnotationAsync(annotations) {
+        return __awaiter$n(this, void 0, void 0, function* () {
+            for (let i = 0; i < annotations.length; i++) {
+                const annotationDict = yield this.getAnnotationDictAsync(annotations[i]);
+                console.log("removeAnnotationAsync", annotationDict);
+                yield this.removeAnnotationByObject(annotationDict, true);
+            }
+            yield this.parseSupportedAnnotationsAsync();
+            return true;
+        });
     }
     removeSelectedAnnotation() {
         const annotation = this._selectedAnnotation;
@@ -26035,6 +26051,28 @@ class DocumentService {
             type: "delete",
             annotations: [annotation.toDto()],
         }));
+    }
+    removeAnnotationByObject(annotation, undoable) {
+        return __awaiter$n(this, void 0, void 0, function* () {
+            if (!annotation) {
+                return;
+            }
+            annotation.markAsDeleted(true);
+            this.setSelectedAnnotation(annotation);
+            if (undoable) {
+                this.pushCommand({
+                    timestamp: Date.now(),
+                    undo: () => __awaiter$n(this, void 0, void 0, function* () {
+                        yield this.appendAnnotationAsync(annotation.$pageId, annotation, false, "add");
+                    })
+                });
+            }
+            this._eventService.dispatchEvent(new AnnotEvent({
+                type: "delete",
+                annotations: [annotation.toDto()],
+            }));
+            return true;
+        });
     }
     getOnAnnotEditAction(annotation) {
         if (!annotation) {
@@ -31017,7 +31055,6 @@ class TsPdfViewer {
             (_a = this._annotatorService.annotator) === null || _a === void 0 ? void 0 : _a.saveAnnotationAsync();
         };
         this.annotatorOptions = () => {
-            console.log("annotatorOptions this._viewer", this._viewer);
             const customEvent = new MouseEvent('contextmenu', {
                 bubbles: true,
                 cancelable: true,

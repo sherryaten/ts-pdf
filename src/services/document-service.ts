@@ -168,7 +168,7 @@ export class DocumentService {
     this._eventService.addListener(annotFocusRequestEvent, this.onAnnotationFocusRequest);
 
     this._initPromise = this.initAsync();
-  }
+  }  
 
   static async createNewAsync(eventService: EventService, 
     data: Uint8Array, userName: string): Promise<DocumentService> {
@@ -320,9 +320,22 @@ export class DocumentService {
     }
   }
 
+  async getAnnotationDictAsync(dto:AnnotationDto){
+    return await AnnotationParser.ParseAnnotationFromDtoAsync(dto, this._fontMap);
+  }
   /**mark an annotation as deleted */
   removeAnnotationFromPage(annotation: AnnotationDict) {
     this.removeAnnotation(annotation, true);
+  }
+
+  async removeAnnotationAsync(annotations: AnnotationDto[]) {
+    for(let i = 0; i < annotations.length; i++){
+      const annotationDict = await this.getAnnotationDictAsync(annotations[i]);
+      console.log("removeAnnotationAsync",annotationDict);
+      await this.removeAnnotationByObject(annotationDict,true);
+    }  
+    await this.parseSupportedAnnotationsAsync();
+    return true;
   }
 
   /**mark the currently selected annotation as deleted */
@@ -505,7 +518,7 @@ export class DocumentService {
     if (!annotation) {
       return;
     }
-
+    
     annotation.markAsDeleted(true);
     this.setSelectedAnnotation(null);
     
@@ -522,6 +535,31 @@ export class DocumentService {
       type: "delete",
       annotations: [annotation.toDto()],
     }));
+  }
+
+  private async removeAnnotationByObject(annotation: AnnotationDict, undoable: boolean) {
+    if (!annotation) {
+      return;
+    }
+    
+    annotation.markAsDeleted(true);
+    this.setSelectedAnnotation(annotation);
+    
+    if (undoable) {
+      this.pushCommand({
+        timestamp: Date.now(),
+        undo: async () => {
+          await this.appendAnnotationAsync(annotation.$pageId, annotation, false, "add");
+        }
+      });
+    }
+    
+    this._eventService.dispatchEvent(new AnnotEvent({  
+      type: "delete",
+      annotations: [annotation.toDto()],
+    }));
+
+    return true;
   }
 
   private getOnAnnotEditAction(annotation: AnnotationDict): (undo: () => Promise<void>) => void {
