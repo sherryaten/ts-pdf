@@ -1,5 +1,5 @@
 
-export const viewerModes = ["text", "hand", "annotation", "comparison"] as const;
+export const viewerModes = ["text", "hand", "annotation", "comparison","bookmark","save"] as const;
 export type ViewerMode =  typeof viewerModes[number];
 
 export interface ModeServiceOptions {

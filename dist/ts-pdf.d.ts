@@ -939,7 +939,7 @@ declare global {
     }
 }
 
-declare const viewerModes: readonly ["text", "hand", "annotation", "comparison"];
+declare const viewerModes: readonly ["text", "hand", "annotation", "comparison","bookmark","save"];
 type ViewerMode = typeof viewerModes[number];
 
 declare global {
