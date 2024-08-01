@@ -1,15 +1,15 @@
 
-export const viewerModes = ["text", "hand", "annotation", "comparison","bookmark","save"] as const;
-export type ViewerMode =  typeof viewerModes[number];
+export const viewerModes = ["text", "hand", "annotation", "comparison", "bookmark", "save", "list"] as const;
+export type ViewerMode = typeof viewerModes[number];
 
 export interface ModeServiceOptions {
   disabledModes?: ViewerMode[];
 }
 
-export class ModeService {  
+export class ModeService {
   public readonly enabledModes: readonly ViewerMode[];
 
-  private _mode: ViewerMode;  
+  private _mode: ViewerMode;
   get mode(): ViewerMode {
     return this._mode;
   }
@@ -42,7 +42,7 @@ export class ModeService {
 
   addOnModeChangeStarted(action: () => void) {
     this._onModeChangeStarted.add(action);
-  }  
+  }
 
   removeOnModeChangeStarted(action: () => void) {
     this._onModeChangeStarted.delete(action);

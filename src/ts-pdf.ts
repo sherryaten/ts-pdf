@@ -650,22 +650,13 @@ export class TsPdfViewer {
       return;
     }
     const mode = /button-mode-(.+)/.exec(parentButton.id)[1] as ViewerMode;
-    console.log("onViewerModeButtonClick: 653 ", mode);
-    if(mode === "bookmark"){
+    
+    if(mode == "bookmark" || mode == "save" || mode == "list") {
       const message = {
-        type: 'bookmarkClicked',
-      };
-
-      // Send message to parent window
-      window.parent.postMessage(message, '*');
-    }else if(mode === "save"){
-      const message = {
-        type: 'saveClicked',
-      };
-
-      // Send message to parent window
-      window.parent.postMessage(message, '*');
-    }else{
+          type: mode+'Clicked',
+        };
+        window.parent.postMessage(message, '*');
+  }else{
       this.setMode(mode);
     }
   };
