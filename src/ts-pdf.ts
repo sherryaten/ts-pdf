@@ -1182,6 +1182,10 @@ export class TsPdfViewer {
         this._annotatorService.annotator?.clear();
         break;
       case "Backspace":
+        const target = event.target as HTMLElement; // Cast to HTMLElement
+        if (target?.tagName === 'TEXTAREA') {
+          return;
+        }
         event.preventDefault();
         this._annotatorService.annotator?.undo();
         break;

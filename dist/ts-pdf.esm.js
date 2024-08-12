@@ -2498,7 +2498,7 @@ class BgDataParser {
             const buffer = await workerPromise;
             return buffer;
         }
-        catch (_a) {
+        catch {
             throw new Error("Error while transfering parser data from worker");
         }
     }
@@ -3048,15 +3048,14 @@ class SyncDataParser {
         }
     }
     async findSubarrayIndexAsync(sub, options) {
-        var _a, _b, _c;
         const arr = this._data;
-        if (!(sub === null || sub === void 0 ? void 0 : sub.length)) {
+        if (!sub?.length) {
             return null;
         }
-        const direction = (_a = options === null || options === void 0 ? void 0 : options.direction) !== null && _a !== void 0 ? _a : true;
-        const minIndex = Math.max(Math.min((_b = options === null || options === void 0 ? void 0 : options.minIndex) !== null && _b !== void 0 ? _b : 0, this._maxIndex), 0);
-        const maxIndex = Math.max(Math.min((_c = options === null || options === void 0 ? void 0 : options.maxIndex) !== null && _c !== void 0 ? _c : this._maxIndex, this._maxIndex), 0);
-        const allowOpened = !(options === null || options === void 0 ? void 0 : options.closedOnly);
+        const direction = options?.direction ?? true;
+        const minIndex = Math.max(Math.min(options?.minIndex ?? 0, this._maxIndex), 0);
+        const maxIndex = Math.max(Math.min(options?.maxIndex ?? this._maxIndex, this._maxIndex), 0);
+        const allowOpened = !options?.closedOnly;
         const searcher = new NaiveBytePatternSearch(sub);
         let start;
         let end;
@@ -3611,13 +3610,12 @@ class SyncDataParser {
         return await this.parseDictPropertyByNameAsync(keywordCodes.SUBTYPE, bounds);
     }
     async parseDictPropertyByNameAsync(propName, bounds) {
-        var _a, _b;
         const arr = this._data;
-        if (!(propName === null || propName === void 0 ? void 0 : propName.length)) {
+        if (!propName?.length) {
             return null;
         }
-        const minIndex = Math.max(Math.min((_a = bounds.start) !== null && _a !== void 0 ? _a : 0, this._maxIndex), 0);
-        const maxIndex = Math.max(Math.min((_b = bounds.end) !== null && _b !== void 0 ? _b : this._maxIndex, this._maxIndex), 0);
+        const minIndex = Math.max(Math.min(bounds.start ?? 0, this._maxIndex), 0);
+        const maxIndex = Math.max(Math.min(bounds.end ?? this._maxIndex, this._maxIndex), 0);
         let propNameBounds;
         let i = minIndex;
         let j;
@@ -4360,14 +4358,14 @@ class DateString {
             return null;
         }
         let bytes = await parser.sliceCharCodesAsync(start + 1, end - 1);
-        if ((cryptInfo === null || cryptInfo === void 0 ? void 0 : cryptInfo.ref) && cryptInfo.stringCryptor) {
+        if (cryptInfo?.ref && cryptInfo.stringCryptor) {
             bytes = cryptInfo.stringCryptor.decrypt(bytes, cryptInfo.ref);
         }
         try {
             const date = DateString.fromArray(bytes);
             return { value: date, start, end };
         }
-        catch (_a) {
+        catch {
             return null;
         }
     }
@@ -4424,7 +4422,7 @@ class HexString {
             return null;
         }
         let bytes = await parser.sliceCharCodesAsync(bounds.start + 1, bounds.end - 1);
-        if ((cryptInfo === null || cryptInfo === void 0 ? void 0 : cryptInfo.ref) && cryptInfo.stringCryptor) {
+        if (cryptInfo?.ref && cryptInfo.stringCryptor) {
             bytes = cryptInfo.stringCryptor.decrypt(bytes, cryptInfo.ref);
         }
         const hex = HexString.fromBytes(bytes);
@@ -4491,7 +4489,7 @@ class LiteralString {
             return;
         }
         let bytes = LiteralString.unescape(await parser.sliceCharCodesAsync(bounds.start + 1, bounds.end - 1));
-        if ((cryptInfo === null || cryptInfo === void 0 ? void 0 : cryptInfo.ref) && cryptInfo.stringCryptor) {
+        if (cryptInfo?.ref && cryptInfo.stringCryptor) {
             bytes = cryptInfo.stringCryptor.decrypt(bytes, cryptInfo.ref);
         }
         const result = LiteralString.fromBytes(bytes);
@@ -4680,8 +4678,8 @@ class PdfObject {
         };
     }
     static async getDataParserAsync(data) {
-        var _a;
-        const parser = (_a = BgDataParser.tryGetParser(data.slice())) !== null && _a !== void 0 ? _a : SyncDataParser.tryGetParser(data);
+        const parser = BgDataParser.tryGetParser(data.slice()) ??
+            SyncDataParser.tryGetParser(data);
         return parser;
     }
     markAsDeleted(value = true) {
@@ -4786,14 +4784,13 @@ class PdfDict extends PdfObject {
         return new Uint8Array(bytes);
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         if (!parseInfo) {
             throw new Error("Parse info is empty");
         }
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
         const end = bounds.contentEnd || bounds.end;
-        this._ref = (_a = parseInfo.cryptInfo) === null || _a === void 0 ? void 0 : _a.ref;
+        this._ref = parseInfo.cryptInfo?.ref;
         this._streamId = parseInfo.streamId;
         this._sourceBytes = await parser.sliceCharCodesAsync(start, end);
         let i = await parser.skipToNextNameAsync(start, end - 1);
@@ -5715,14 +5712,13 @@ class PdfStream extends PdfObject {
         this.streamData = bytes;
     }
     async parsePropsAsync(parseInfo) {
-        var _a, _b;
         if (!parseInfo) {
             throw new Error("Parse info is empty");
         }
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
         const end = bounds.contentEnd || bounds.end;
-        this._ref = (_a = parseInfo.cryptInfo) === null || _a === void 0 ? void 0 : _a.ref;
+        this._ref = parseInfo.cryptInfo?.ref;
         this._sourceBytes = await parser.sliceCharCodesAsync(start, end);
         const streamEndIndex = await parser.findSubarrayIndexAsync(keywordCodes.STREAM_END, {
             direction: false,
@@ -5839,7 +5835,7 @@ class PdfStream extends PdfObject {
         const streamStart = await parser.findNewLineIndexAsync(true, streamStartIndex.end + 1);
         const streamEnd = await parser.findNewLineIndexAsync(false, streamEndIndex.start - 1);
         const streamBytes = await parser.sliceCharCodesAsync(streamStart, streamEnd);
-        const encodedData = ((_b = parseInfo.cryptInfo) === null || _b === void 0 ? void 0 : _b.ref) && parseInfo.cryptInfo.streamCryptor
+        const encodedData = parseInfo.cryptInfo?.ref && parseInfo.cryptInfo.streamCryptor
             ? parseInfo.cryptInfo.streamCryptor.decrypt(streamBytes, parseInfo.cryptInfo.ref)
             : streamBytes;
         this._streamData = encodedData;
@@ -5947,7 +5943,6 @@ class TrailerStream extends PdfStream {
         return new Uint8Array(totalBytes);
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -6019,7 +6014,7 @@ class TrailerStream extends PdfStream {
         if (!this.W || !this.Size || !this.Root || (this.Encrypt && !this.ID)) {
             throw new Error("Not all required properties parsed");
         }
-        if (!((_a = this.Index) === null || _a === void 0 ? void 0 : _a.length)) {
+        if (!this.Index?.length) {
             this.Index = [0, this.Size];
         }
     }
@@ -6886,14 +6881,13 @@ class UnicodeCmapStream extends PdfStream {
         return false;
     }
     async parseCodeRangesAsync(parser) {
-        var _a, _b;
         let i = 0;
-        const codeRangeStart = (_a = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_CODE_RANGE, { closedOnly: true }))) === null || _a === void 0 ? void 0 : _a.end;
+        const codeRangeStart = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_CODE_RANGE, { closedOnly: true }))?.end;
         if (!codeRangeStart) {
             return;
         }
         i = codeRangeStart + 1;
-        const codeRangeEnd = (_b = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_CODE_RANGE, { closedOnly: true, minIndex: i }))) === null || _b === void 0 ? void 0 : _b.start;
+        const codeRangeEnd = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_CODE_RANGE, { closedOnly: true, minIndex: i }))?.start;
         while (i < codeRangeEnd - 1) {
             const rangeStart = await HexString.parseAsync(parser, i);
             i = rangeStart.end + 1;
@@ -6907,15 +6901,14 @@ class UnicodeCmapStream extends PdfStream {
         }
     }
     async parseCharMapAsync(parser, decoder) {
-        var _a, _b;
         let i = 0;
         while (true) {
-            const charMapStart = (_a = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_CHAR, { closedOnly: true, minIndex: i }))) === null || _a === void 0 ? void 0 : _a.end;
+            const charMapStart = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_CHAR, { closedOnly: true, minIndex: i }))?.end;
             if (!charMapStart) {
                 break;
             }
             i = charMapStart + 1;
-            const charMapEnd = (_b = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_CHAR, { closedOnly: true, minIndex: i }))) === null || _b === void 0 ? void 0 : _b.start;
+            const charMapEnd = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_CHAR, { closedOnly: true, minIndex: i }))?.start;
             while (i < charMapEnd - 1) {
                 const hexKey = await HexString.parseAsync(parser, i);
                 i = hexKey.end + 1;
@@ -6926,15 +6919,14 @@ class UnicodeCmapStream extends PdfStream {
         }
     }
     async parseCharRangesMapAsync(parser, decoder) {
-        var _a, _b;
         let i = 0;
         while (true) {
-            const rangeMapStart = (_a = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_RANGE, { closedOnly: true, minIndex: i }))) === null || _a === void 0 ? void 0 : _a.end;
+            const rangeMapStart = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_BEGIN_RANGE, { closedOnly: true, minIndex: i }))?.end;
             if (!rangeMapStart) {
                 break;
             }
             i = rangeMapStart + 1;
-            const rangeMapEnd = (_b = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_RANGE, { closedOnly: true, minIndex: i }))) === null || _b === void 0 ? void 0 : _b.start;
+            const rangeMapEnd = (await parser.findSubarrayIndexAsync(keywordCodes.CMAP_END_RANGE, { closedOnly: true, minIndex: i }))?.start;
             while (i < rangeMapEnd - 1) {
                 const keyRangeStart = await HexString.parseAsync(parser, i);
                 i = keyRangeStart.end + 1;
@@ -11740,17 +11732,17 @@ class FontDict extends PdfDict {
         if (this.Encoding && this.Encoding instanceof ObjectId) {
             const encodingParseInfo = await parseInfo.parseInfoGetterAsync(this.Encoding.id);
             const encodingDict = await EncodingDict.parseAsync(encodingParseInfo);
-            this._encoding = encodingDict === null || encodingDict === void 0 ? void 0 : encodingDict.value;
+            this._encoding = encodingDict?.value;
         }
         if (this.ToUnicode) {
             const toUtfParseInfo = await parseInfo.parseInfoGetterAsync(this.ToUnicode.id);
             const cmap = await UnicodeCmapStream.parseAsync(toUtfParseInfo);
-            this._toUtfCmap = cmap === null || cmap === void 0 ? void 0 : cmap.value;
+            this._toUtfCmap = cmap?.value;
         }
         if (this.FontDescriptor) {
             const descriptorParseInfo = await parseInfo.parseInfoGetterAsync(this.FontDescriptor.id);
             const descriptor = await FontDescriptorDict.parseAsync(descriptorParseInfo);
-            this._descriptor = descriptor === null || descriptor === void 0 ? void 0 : descriptor.value;
+            this._descriptor = descriptor?.value;
         }
         if (this.Subtype !== "/Type1"
             && this.Subtype !== "/Type3"
@@ -14114,7 +14106,6 @@ class BorderStyleDict extends PdfDict {
         return new Uint8Array(totalBytes);
     }
     async parsePropsAsync(parseInfo) {
-        var _a, _b;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -14145,8 +14136,8 @@ class BorderStyleDict extends PdfDict {
                         const dashGap = await parser.parseNumberArrayAtAsync(i, true);
                         if (dashGap) {
                             this.D = [
-                                (_a = dashGap.value[0]) !== null && _a !== void 0 ? _a : 3,
-                                (_b = dashGap.value[1]) !== null && _b !== void 0 ? _b : 0,
+                                dashGap.value[0] ?? 3,
+                                dashGap.value[1] ?? 0,
                             ];
                             i = dashGap.end + 1;
                         }
@@ -14904,9 +14895,8 @@ class AnnotationDict extends PdfDict {
         };
     }
     async setTextContentAsync(text, undoable = true) {
-        var _a;
         const dict = this.getProxy();
-        const oldText = (_a = dict.Contents) === null || _a === void 0 ? void 0 : _a.literal;
+        const oldText = dict.Contents?.literal;
         if (!text) {
             dict.Contents = null;
         }
@@ -14924,7 +14914,6 @@ class AnnotationDict extends PdfDict {
         }
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -15112,7 +15101,7 @@ class AnnotationDict extends PdfDict {
         if (!this.Subtype || !this.Rect) {
             throw new Error("Not all required properties parsed");
         }
-        this.$name = ((_a = this.NM) === null || _a === void 0 ? void 0 : _a.literal) || UUID.getRandomUuid();
+        this.$name = this.NM?.literal || UUID.getRandomUuid();
     }
     getColorString() {
         let colorString;
@@ -15409,13 +15398,12 @@ class AnnotationDict extends PdfDict {
         return [...this.renderScaleHandles(), this.renderRotationHandle()];
     }
     async updateRenderAsync() {
-        var _a;
         if (!this._renderedControls) {
             return;
         }
         this._renderedControls.innerHTML = "";
         const contentRenderResult = this.renderAppearance() || await this.renderApStreamAsync();
-        if (!contentRenderResult || !((_a = contentRenderResult.elements) === null || _a === void 0 ? void 0 : _a.length)) {
+        if (!contentRenderResult || !contentRenderResult.elements?.length) {
             this._renderedBox = null;
             this._svgContentCopy = null;
             return null;
@@ -15605,8 +15593,7 @@ class MarkupAnnotation extends AnnotationDict {
         return color;
     }
     async updateTextDataAsync(options) {
-        var _a;
-        const text = (_a = this.Contents) === null || _a === void 0 ? void 0 : _a.literal;
+        const text = this.Contents?.literal;
         const textData = await TextData.buildAsync(text, options);
         this._textData = textData;
         return this._textData;
@@ -16792,7 +16779,6 @@ class EncryptionDict extends PdfDict {
         };
     }
     async parsePropsAsync(parseInfo) {
-        var _a, _b;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -16912,10 +16898,10 @@ class EncryptionDict extends PdfDict {
             throw new Error("Not all required properties parsed");
         }
         if (this.StrF !== "/Identity") {
-            this.stringFilter = (_a = this.CF) === null || _a === void 0 ? void 0 : _a.getProp(this.StrF);
+            this.stringFilter = this.CF?.getProp(this.StrF);
         }
         if (this.StmF !== "/Identity") {
-            this.streamFilter = (_b = this.CF) === null || _b === void 0 ? void 0 : _b.getProp(this.StmF);
+            this.streamFilter = this.CF?.getProp(this.StmF);
         }
     }
 }
@@ -17146,12 +17132,11 @@ class XrefParser {
         this._dataParser = parser;
     }
     async getPdfVersionAsync() {
-        var _a;
         const i = await this._dataParser.findSubarrayIndexAsync(keywordCodes.VERSION);
         if (!i) {
             return null;
         }
-        const version = (_a = (await this._dataParser.parseNumberAtAsync(i.end + 1, true))) === null || _a === void 0 ? void 0 : _a.value;
+        const version = (await this._dataParser.parseNumberAtAsync(i.end + 1, true))?.value;
         if (!version) {
             return null;
         }
@@ -17185,7 +17170,7 @@ class XrefParser {
             }
             else {
                 const xrefTable = await XRefTable.parseAsync(this._dataParser, start, offset);
-                return xrefTable === null || xrefTable === void 0 ? void 0 : xrefTable.value;
+                return xrefTable?.value;
             }
         }
         const id = await ObjectId.parseAsync(this._dataParser, start, false);
@@ -17197,7 +17182,7 @@ class XrefParser {
             return null;
         }
         const xrefStream = await XRefStream.parseAsync({ parser: this._dataParser, bounds: xrefStreamBounds }, offset);
-        return xrefStream === null || xrefStream === void 0 ? void 0 : xrefStream.value;
+        return xrefStream?.value;
     }
     async parseAllXrefsAsync(start) {
         const xrefs = [];
@@ -21059,7 +21044,6 @@ class InkAnnotation extends MarkupAnnotation {
         };
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -21100,7 +21084,7 @@ class InkAnnotation extends MarkupAnnotation {
                 break;
             }
         }
-        if (!((_a = this.InkList) === null || _a === void 0 ? void 0 : _a.length)) {
+        if (!this.InkList?.length) {
             throw new Error("Not all required properties parsed");
         }
         await this.bakeRotationAsync();
@@ -21145,7 +21129,6 @@ class InkAnnotation extends MarkupAnnotation {
         this.apStream = apStream;
     }
     async applyCommonTransformAsync(matrix, undoable = true) {
-        var _a, _b, _c, _d;
         const dict = this.getProxy();
         let x;
         let y;
@@ -21175,7 +21158,7 @@ class InkAnnotation extends MarkupAnnotation {
                 }
             }
         });
-        const margin = ((_d = (_b = (_a = dict.BS) === null || _a === void 0 ? void 0 : _a.W) !== null && _b !== void 0 ? _b : (_c = dict.Border) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : 1) / 2;
+        const margin = (dict.BS?.W ?? dict.Border?.width ?? 1) / 2;
         xMin -= margin;
         yMin -= margin;
         xMax += margin;
@@ -21959,7 +21942,6 @@ class PolygonAnnotation extends PolyAnnotation {
         this.apStream = apStream;
     }
     async applyCommonTransformAsync(matrix, undoable = true) {
-        var _a, _b, _c, _d;
         const dict = this.getProxy();
         let x;
         let y;
@@ -21988,7 +21970,7 @@ class PolygonAnnotation extends PolyAnnotation {
                 yMax = vec.y;
             }
         }
-        const halfStrokeWidth = ((_d = (_b = (_a = dict.BS) === null || _a === void 0 ? void 0 : _a.W) !== null && _b !== void 0 ? _b : (_c = dict.Border) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : 1) / 2;
+        const halfStrokeWidth = (dict.BS?.W ?? dict.Border?.width ?? 1) / 2;
         const margin = dict.IT === polyIntents.CLOUD
             ? PolygonAnnotation.cloudArcSize / 2 + halfStrokeWidth
             : halfStrokeWidth;
@@ -22205,7 +22187,6 @@ class PolylineAnnotation extends PolyAnnotation {
         this.apStream = apStream;
     }
     async applyCommonTransformAsync(matrix, undoable = true) {
-        var _a, _b, _c, _d;
         const dict = this.getProxy();
         let x;
         let y;
@@ -22234,7 +22215,7 @@ class PolylineAnnotation extends PolyAnnotation {
                 yMax = vec.y;
             }
         }
-        const margin = ((_d = (_b = (_a = dict.BS) === null || _a === void 0 ? void 0 : _a.W) !== null && _b !== void 0 ? _b : (_c = dict.Border) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : 1) / 2;
+        const margin = (dict.BS?.W ?? dict.Border?.width ?? 1) / 2;
         xMin -= margin;
         yMin -= margin;
         xMax += margin;
@@ -22498,7 +22479,6 @@ class LineAnnotation extends GeometricAnnotation {
         await this.updateStreamAsync();
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -22601,12 +22581,12 @@ class LineAnnotation extends GeometricAnnotation {
         }
         if (this.RC) {
             const domParser = new DOMParser();
-            const body = (_a = domParser.parseFromString(this.RC.literal, "text/xml")) === null || _a === void 0 ? void 0 : _a.querySelector("body");
+            const body = domParser.parseFromString(this.RC.literal, "text/xml")?.querySelector("body");
             if (body) {
                 const style = body.getAttribute("style");
                 const p = body.querySelector("p");
                 this._rtStyle = style || "";
-                this._rtText = (p === null || p === void 0 ? void 0 : p.textContent) || "";
+                this._rtText = p?.textContent || "";
             }
         }
     }
@@ -22771,7 +22751,6 @@ class LineAnnotation extends GeometricAnnotation {
         return textBgRectStream + textStream;
     }
     async generateApStreamAsync() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         if (!this.L) {
             return;
         }
@@ -22786,8 +22765,8 @@ class LineAnnotation extends GeometricAnnotation {
         apStream.Resources = new ResourceDict();
         const opacity = this.CA || 1;
         const strokeWidth = this.strokeWidth;
-        const strokeDash = (_d = (_b = (_a = this.BS) === null || _a === void 0 ? void 0 : _a.D[0]) !== null && _b !== void 0 ? _b : (_c = this.Border) === null || _c === void 0 ? void 0 : _c.dash) !== null && _d !== void 0 ? _d : 3;
-        const strokeGap = (_h = (_f = (_e = this.BS) === null || _e === void 0 ? void 0 : _e.D[1]) !== null && _f !== void 0 ? _f : (_g = this.Border) === null || _g === void 0 ? void 0 : _g.gap) !== null && _h !== void 0 ? _h : 0;
+        const strokeDash = this.BS?.D[0] ?? this.Border?.dash ?? 3;
+        const strokeGap = this.BS?.D[1] ?? this.Border?.gap ?? 0;
         const gs = new GraphicsStateDict();
         gs.AIS = true;
         gs.BM = "/Normal";
@@ -22799,8 +22778,8 @@ class LineAnnotation extends GeometricAnnotation {
         gs.LJ = lineJoinStyles.MITER;
         apStream.Resources.setGraphicsState("/GS0", gs);
         const fontFamily = "arial";
-        const font = (_j = this._fontMap) === null || _j === void 0 ? void 0 : _j.get(fontFamily);
-        if (!font || !((_k = font.encoding) === null || _k === void 0 ? void 0 : _k.codeMap)) {
+        const font = this._fontMap?.get(fontFamily);
+        if (!font || !font.encoding?.codeMap) {
             throw new Error(`Suitable font is not found in the font map: '${fontFamily}'`);
         }
         apStream.Resources.setFont(font.name, font);
@@ -23874,7 +23853,6 @@ class FreeTextAnnotation extends MarkupAnnotation {
         await this.updateStreamAsync(null);
     }
     async parsePropsAsync(parseInfo) {
-        var _a;
         await super.parsePropsAsync(parseInfo);
         const { parser, bounds } = parseInfo;
         const start = bounds.contentStart || bounds.start;
@@ -23948,12 +23926,12 @@ class FreeTextAnnotation extends MarkupAnnotation {
         }
         if (this.RC) {
             const domParser = new DOMParser();
-            const body = (_a = domParser.parseFromString(this.RC.literal, "text/xml")) === null || _a === void 0 ? void 0 : _a.querySelector("body");
+            const body = domParser.parseFromString(this.RC.literal, "text/xml")?.querySelector("body");
             if (body) {
                 const style = body.getAttribute("style");
                 const p = body.querySelector("p");
                 this._rtStyle = style || "";
-                this._rtText = (p === null || p === void 0 ? void 0 : p.textContent) || "";
+                this._rtText = p?.textContent || "";
             }
         }
         if (!this.DA && !this.AP) {
@@ -24123,7 +24101,6 @@ class FreeTextAnnotation extends MarkupAnnotation {
         return textStream;
     }
     async generateApStreamAsync(pPoints) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         if (!pPoints) {
             throw new Error("No key annotation point coordinates passed");
         }
@@ -24138,8 +24115,8 @@ class FreeTextAnnotation extends MarkupAnnotation {
         apStream.Resources = new ResourceDict();
         const opacity = this.CA || 1;
         const strokeWidth = this.strokeWidth;
-        const strokeDash = (_d = (_b = (_a = this.BS) === null || _a === void 0 ? void 0 : _a.D[0]) !== null && _b !== void 0 ? _b : (_c = this.Border) === null || _c === void 0 ? void 0 : _c.dash) !== null && _d !== void 0 ? _d : 3;
-        const strokeGap = (_h = (_f = (_e = this.BS) === null || _e === void 0 ? void 0 : _e.D[1]) !== null && _f !== void 0 ? _f : (_g = this.Border) === null || _g === void 0 ? void 0 : _g.gap) !== null && _h !== void 0 ? _h : 0;
+        const strokeDash = this.BS?.D[0] ?? this.Border?.dash ?? 3;
+        const strokeGap = this.BS?.D[1] ?? this.Border?.gap ?? 0;
         const gs = new GraphicsStateDict();
         gs.AIS = true;
         gs.BM = "/Normal";
@@ -24151,8 +24128,8 @@ class FreeTextAnnotation extends MarkupAnnotation {
         gs.LJ = lineJoinStyles.MITER;
         apStream.Resources.setGraphicsState("/GS0", gs);
         const fontFamily = "arial";
-        const font = (_j = this._fontMap) === null || _j === void 0 ? void 0 : _j.get(fontFamily);
-        if (!font || !((_k = font.encoding) === null || _k === void 0 ? void 0 : _k.codeMap)) {
+        const font = this._fontMap?.get(fontFamily);
+        if (!font || !font.encoding?.codeMap) {
             throw new Error(`Suitable font is not found in the font map: '${fontFamily}'`);
         }
         apStream.Resources.setFont(font.name, font);
@@ -24309,7 +24286,7 @@ class AnnotationParser {
                 annot = await FreeTextAnnotation.parseAsync(info, fontMap);
                 break;
         }
-        return annot === null || annot === void 0 ? void 0 : annot.value;
+        return annot?.value;
     }
     static async ParseAnnotationFromDtoAsync(dto, fontMap) {
         let annotation;
@@ -24419,7 +24396,6 @@ class DocumentService {
         this._annotIdsByPageId = new Map();
         this._lastCommands = [];
         this.getObjectParseInfoAsync = async (id) => {
-            var _a, _b, _c;
             if (!id) {
                 return null;
             }
@@ -24521,7 +24497,7 @@ class DocumentService {
     async getDataWithoutSupportedAnnotationsAsync() {
         const annotationMap = await this.getSupportedAnnotationMapAsync();
         const annotationMarkedToDelete = [];
-        if (annotationMap === null || annotationMap === void 0 ? void 0 : annotationMap.size) {
+        if (annotationMap?.size) {
             annotationMap.forEach((v, k) => {
                 const annotations = v.slice();
                 annotations.forEach(x => {
@@ -24583,6 +24559,9 @@ class DocumentService {
             annotation = await AnnotationParser.ParseAnnotationFromDtoAsync(dto, this._fontMap);
             await this.appendAnnotationAsync(dto.pageId, annotation, false, "import");
         }
+    }
+    async getAnnotationDictAsync(dto) {
+        return await AnnotationParser.ParseAnnotationFromDtoAsync(dto, this._fontMap);
     }
     removeAnnotationFromPage(annotation) {
         this.removeAnnotation(annotation, true);
@@ -24658,8 +24637,7 @@ class DocumentService {
         return this._selectedAnnotation?.Contents?.literal;
     }
     async setSelectedAnnotationTextContentAsync(text) {
-        var _a;
-        await ((_a = this._selectedAnnotation) === null || _a === void 0 ? void 0 : _a.setTextContentAsync(text));
+        await this._selectedAnnotation?.setTextContentAsync(text);
     }
     async parseXrefsAsync() {
         const xrefParser = new XrefParser(this._docParser);
@@ -24683,8 +24661,8 @@ class DocumentService {
         this._referenceData = new ReferenceData(xrefs);
     }
     async initAsync() {
-        var _a;
-        this._docParser = (_a = BgDataParser.tryGetParser(this._data.slice())) !== null && _a !== void 0 ? _a : SyncDataParser.tryGetParser(this._data);
+        this._docParser = BgDataParser.tryGetParser(this._data.slice()) ??
+            SyncDataParser.tryGetParser(this._data);
         await this.parseXrefsAsync();
         await this.parseEncryptionAsync();
     }
@@ -24879,7 +24857,6 @@ class DocumentService {
         pages.forEach(x => this._pageById.set(x.ref.id, x));
     }
     async parseSupportedAnnotationsAsync() {
-        var _a;
         this.checkAuthentication();
         if (!this._catalog) {
             await this.parsePageTreeAsync();
@@ -24895,7 +24872,7 @@ class DocumentService {
                 const parseInfo = await this.getObjectParseInfoAsync(page.Annots.id);
                 if (parseInfo) {
                     const annotationRefs = await ObjectId.parseRefArrayAsync(parseInfo.parser, parseInfo.bounds.contentStart);
-                    if ((_a = annotationRefs === null || annotationRefs === void 0 ? void 0 : annotationRefs.value) === null || _a === void 0 ? void 0 : _a.length) {
+                    if (annotationRefs?.value?.length) {
                         annotationIds.push(...annotationRefs.value);
                     }
                 }
@@ -24985,14 +24962,13 @@ class PageAnnotationView {
         this._docService.eventService.removeListener(annotChangeEvent, this.onAnnotationSelectionChange);
     }
     async appendAsync(parent) {
-        var _a;
         if (this._destroyed) {
             return;
         }
         parent.append(this._container);
         const renderResult = await this.renderAnnotationsAsync();
         if (!renderResult) {
-            (_a = this._container) === null || _a === void 0 ? void 0 : _a.remove();
+            this._container?.remove();
             return;
         }
         this._docService.eventService.addListener(annotChangeEvent, this.onAnnotationSelectionChange);
@@ -25095,14 +25071,13 @@ class PageComparisonView {
         this._container?.remove();
     }
     async appendAsync(parent, agentPageProxy, scale) {
-        var _a;
         this.remove();
         if (this._destroyed || !agentPageProxy) {
             return;
         }
         const comparisonResult = this._comparisonService
             .getComparisonResultForPage(this._subjectPageInfo.index);
-        if (!((_a = comparisonResult === null || comparisonResult === void 0 ? void 0 : comparisonResult.areas) === null || _a === void 0 ? void 0 : _a.length)) {
+        if (!comparisonResult?.areas?.length) {
             return;
         }
         if (!this._lastRenderResult
@@ -25448,7 +25423,6 @@ class PageView {
         this._previewRendered = true;
     }
     async runViewRenderAsync(force) {
-        var _a;
         if (this._destroyed) {
             return;
         }
@@ -25469,7 +25443,7 @@ class PageView {
             await this.renderAnnotationLayerAsync();
         }
         else {
-            (_a = this._annotations) === null || _a === void 0 ? void 0 : _a.remove();
+            this._annotations?.remove();
             await this.renderComparisonLayerAsync();
         }
         this._lastRenderMode = mode;
@@ -25482,7 +25456,6 @@ class PageView {
         this._text?.remove();
     }
     async renderCanvasLayerAsync(scale) {
-        var _a;
         const canvas = this.createViewCanvas();
         const params = {
             canvasContext: canvas.getContext("2d"),
@@ -25493,7 +25466,7 @@ class PageView {
         if (!result || scale !== this._scale) {
             return false;
         }
-        (_a = this._viewCanvas) === null || _a === void 0 ? void 0 : _a.remove();
+        this._viewCanvas?.remove();
         this._viewInnerContainer.append(canvas);
         this._viewCanvas = canvas;
         this._viewRendered = true;
@@ -25510,10 +25483,9 @@ class PageView {
         await this._annotations.appendAsync(this._viewInnerContainer);
     }
     async renderComparisonLayerAsync() {
-        var _a;
         const comparisonPageProxy = this._docManagerService.getPageProxy("compared", this.index);
         if (!comparisonPageProxy) {
-            (_a = this._comparison) === null || _a === void 0 ? void 0 : _a.remove();
+            this._comparison?.remove();
             return;
         }
         if (!this._comparison) {
@@ -27121,7 +27093,6 @@ class StampAnnotator extends Annotator {
             this.updatePointerCoords(cx, cy);
         };
         this.onPointerUp = async (e) => {
-            var _a, _b, _c;
             if (!e.isPrimary || e.button === 2) {
                 return;
             }
@@ -27569,7 +27540,6 @@ class TextNoteAnnotator extends TextAnnotator {
             this.updatePointerCoords(cx, cy);
         };
         this.onPointerUp = async (e) => {
-            var _a, _b, _c;
             if (!e.isPrimary || e.button === 2) {
                 return;
             }
@@ -27614,11 +27584,10 @@ class TextNoteAnnotator extends TextAnnotator {
         this._tempAnnotation = null;
     }
     async saveAnnotationAsync() {
-        var _a, _b;
         if (!this._pageId || !this._tempAnnotation) {
             return;
         }
-        const initialText = (_b = (_a = this._tempAnnotation) === null || _a === void 0 ? void 0 : _a.Contents) === null || _b === void 0 ? void 0 : _b.literal;
+        const initialText = this._tempAnnotation?.Contents?.literal;
         const text = await this._viewer.showTextDialogAsync(initialText);
         if (text !== null) {
             await this._tempAnnotation.setTextContentAsync(text);
@@ -28506,7 +28475,6 @@ class PdfLoaderService {
         this._docService?.destroy();
     }
     async openPdfAsync(src, fileName, userName, getPasswordAsync, onProgress) {
-        var _a;
         await this.closePdfAsync();
         let data;
         let doc;
@@ -28551,7 +28519,7 @@ class PdfLoaderService {
         this._pdfDocument = doc;
         const pageMap = new Map();
         for (let i = 0; i < doc.numPages; i++) {
-            const pageProxy = await ((_a = this._pdfDocument) === null || _a === void 0 ? void 0 : _a.getPage(i + 1));
+            const pageProxy = await this._pdfDocument?.getPage(i + 1);
             pageMap.set(i, pageProxy);
         }
         this._pdfPageProxies = pageMap;
@@ -28559,7 +28527,6 @@ class PdfLoaderService {
         this._fileName = fileName;
     }
     async closePdfAsync() {
-        var _a, _b;
         if (this._pdfLoadingTask) {
             if (!this._pdfLoadingTask.destroyed) {
                 await this._pdfLoadingTask.destroy();
@@ -28567,9 +28534,9 @@ class PdfLoaderService {
             this._pdfLoadingTask = null;
         }
         this._pdfPageProxies = null;
-        (_a = this._pdfDocument) === null || _a === void 0 ? void 0 : _a.destroy();
+        this._pdfDocument?.destroy();
         this._pdfDocument = null;
-        (_b = this._docService) === null || _b === void 0 ? void 0 : _b.destroy();
+        this._docService?.destroy();
         this._docService = null;
         this._fileName = null;
     }
@@ -28606,7 +28573,7 @@ class ComparisonService {
             const agentPage = i < agentPagesCount
                 ? await agentDocProxy.getPage(i + 1)
                 : null;
-            const pageComparisonResult = await this.comparePagesAsync(subjectPage, agentPage, offsets === null || offsets === void 0 ? void 0 : offsets.get(i));
+            const pageComparisonResult = await this.comparePagesAsync(subjectPage, agentPage, offsets?.get(i));
             result.set(i, pageComparisonResult);
         }
         this._comparisonResult = result;
@@ -28639,9 +28606,8 @@ class ComparisonService {
         return imageData;
     }
     async compareImageDataAsync(subjectImageData, agentImageData, options) {
-        var _a;
-        const threshold = (_a = options === null || options === void 0 ? void 0 : options.threshold) !== null && _a !== void 0 ? _a : 5;
-        const offset = (options === null || options === void 0 ? void 0 : options.offset) || [0, 0];
+        const threshold = options?.threshold ?? 5;
+        const offset = options?.offset || [0, 0];
         if (!subjectImageData) {
             return {
                 areas: [],
@@ -28814,7 +28780,7 @@ class DBSCAN {
         this._assigned = new Array(points.length);
     }
     static async runAsync(points, epsilon, minPoints) {
-        const dbScan = new DBSCAN(points, epsilon !== null && epsilon !== void 0 ? epsilon : 1, minPoints !== null && minPoints !== void 0 ? minPoints : 1);
+        const dbScan = new DBSCAN(points, epsilon ?? 1, minPoints ?? 1);
         return dbScan.runClustering();
     }
     runClustering() {
@@ -29343,7 +29309,6 @@ class TsPdfViewer {
             this._fileInput.click();
         };
         this.onSaveFileButtonClickAsync = async () => {
-            var _a;
             const blob = await this.getCurrentPdfAsync();
             if (!blob) {
                 return;
@@ -29522,13 +29487,12 @@ class TsPdfViewer {
             }
         };
         this.onAnnotationEditTextButtonClick = async () => {
-            var _a, _b;
-            const initialText = (_a = this._docService) === null || _a === void 0 ? void 0 : _a.getSelectedAnnotationTextContent();
+            const initialText = this._docService?.getSelectedAnnotationTextContent();
             const text = await this._viewer.showTextDialogAsync(initialText);
             if (text === null) {
                 return;
             }
-            await ((_b = this._docService) === null || _b === void 0 ? void 0 : _b.setSelectedAnnotationTextContentAsync(text));
+            await this._docService?.setSelectedAnnotationTextContentAsync(text);
         };
         this.onAnnotationDeleteButtonClick = () => {
             this._docService?.removeSelectedAnnotation();
@@ -29561,7 +29525,6 @@ class TsPdfViewer {
             this._docService?.undoAsync();
         };
         this.onDocChangeAsync = async (e) => {
-            var _a;
             if (e.detail.type === "main") {
                 if (e.detail.action === "open") {
                     this.setMode();
@@ -29575,7 +29538,7 @@ class TsPdfViewer {
                     this._mainContainer.classList.remove("annotation-focused");
                     this._mainContainer.classList.remove("annotation-selected");
                     this.setMode();
-                    (_a = this._annotatorService) === null || _a === void 0 ? void 0 : _a.destroy();
+                    this._annotatorService?.destroy();
                     await this.refreshPagesAsync();
                     this.showPanels();
                 }
@@ -29729,6 +29692,10 @@ class TsPdfViewer {
                     this._annotatorService.annotator?.clear();
                     break;
                 case "Backspace":
+                    const target = event.target;
+                    if (target?.tagName === 'TEXTAREA') {
+                        return;
+                    }
                     event.preventDefault();
                     this._annotatorService.annotator?.undo();
                     break;
@@ -29840,32 +29807,28 @@ class TsPdfViewer {
         this.setMode();
     }
     async importAnnotationsAsync(dtos) {
-        var _a;
         try {
-            await ((_a = this._docService) === null || _a === void 0 ? void 0 : _a.appendSerializedAnnotationsAsync(dtos));
+            await this._docService?.appendSerializedAnnotationsAsync(dtos);
         }
         catch (e) {
             console.log(`Error while importing annotations: ${e.message}`);
         }
     }
     async importAnnotationsFromJsonAsync(json) {
-        var _a;
         try {
             const dtos = JSON.parse(json);
-            await ((_a = this._docService) === null || _a === void 0 ? void 0 : _a.appendSerializedAnnotationsAsync(dtos));
+            await this._docService?.appendSerializedAnnotationsAsync(dtos);
         }
         catch (e) {
             console.log(`Error while importing annotations: ${e.message}`);
         }
     }
     async exportAnnotationsAsync() {
-        var _a;
-        const dtos = await ((_a = this._docService) === null || _a === void 0 ? void 0 : _a.serializeAnnotationsAsync(true));
+        const dtos = await this._docService?.serializeAnnotationsAsync(true);
         return dtos;
     }
     async exportAnnotationsToJsonAsync() {
-        var _a;
-        const dtos = await ((_a = this._docService) === null || _a === void 0 ? void 0 : _a.serializeAnnotationsAsync(true));
+        const dtos = await this._docService?.serializeAnnotationsAsync(true);
         return JSON.stringify(dtos);
     }
     importCustomStamps(customStamps) {
@@ -29894,9 +29857,8 @@ class TsPdfViewer {
         return JSON.stringify(customStamps);
     }
     async getCurrentPdfAsync() {
-        var _a;
-        const data = await ((_a = this._docService) === null || _a === void 0 ? void 0 : _a.getDataWithUpdatedAnnotationsAsync());
-        if (!(data === null || data === void 0 ? void 0 : data.length)) {
+        const data = await this._docService?.getDataWithUpdatedAnnotationsAsync();
+        if (!data?.length) {
             return null;
         }
         const blob = new Blob([data], {
