@@ -97,7 +97,8 @@ export class PdfLoaderService {
 
       this._pdfLoadingTask = getDocument({
         // get the pdf data with the supported annotations cut out
-        data: dataWithoutAnnotations, 
+        data: dataWithoutAnnotations,
+        rangeChunkSize: 10 * 1024 * 1024,
         password,
       });
       if (onProgress) {

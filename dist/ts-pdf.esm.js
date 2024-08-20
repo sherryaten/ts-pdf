@@ -28505,6 +28505,7 @@ class PdfLoaderService {
             const dataWithoutAnnotations = await docService.getDataWithoutSupportedAnnotationsAsync();
             this._pdfLoadingTask = getDocument({
                 data: dataWithoutAnnotations,
+                rangeChunkSize: 10 * 1024 * 1024,
                 password,
             });
             if (onProgress) {
