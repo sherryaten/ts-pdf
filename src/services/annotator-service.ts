@@ -19,9 +19,9 @@ export type AnnotatorServiceMode = "select" | "stamp" | "pen" | "geometric" | "t
 
 export class AnnotatorService {
   private readonly _annotationColors: readonly Quadruple[] = [
-    [0, 0, 0, 0.5], // black
-    [0.804, 0, 0, 0.5], // red
     [0, 0.804, 0, 0.5], // green
+    [0, 0, 0, 0.5], // black
+    [0.804, 0, 0, 0.5], // red    
     [0, 0, 0.804, 0.5], // blue
     [1, 0.5, 0, 0.5], // orange
     [1, 0.2, 1, 0.5], // pink
