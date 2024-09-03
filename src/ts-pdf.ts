@@ -767,7 +767,7 @@ export class TsPdfViewer {
   };
 
   private annotatorOptions = () => {
-    // console.log("annotatorOptions this._viewer",this._viewer);
+    console.log("annotatorOptions this._viewer",this._viewer);
     // var ev = document.createEvent('HTMLEvents');
     // ev.clientX = containerWidth;
     // ev.clientY = 100;
@@ -775,7 +775,7 @@ export class TsPdfViewer {
     const customEvent = new MouseEvent('contextmenu', {
       bubbles: true,
       cancelable: true,
-      clientX: (this._viewer.container.clientWidth), // Specify the X coordinate
+      clientX: (this._viewer.container.clientWidth/2), // Specify the X coordinate
       clientY: (this._viewer.container.clientHeight/2)  // Specify the Y coordinate
     });
     this._viewer.container.dispatchEvent(customEvent);

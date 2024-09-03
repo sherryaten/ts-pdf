@@ -119,28 +119,7 @@ export const mainHtml = /*html*/`
           <img src="${Icons.icon_pointer}"/>
         </div> 
       </div>
-      <div class="annotation-panel-row">
-        <div id="button-annotation-stamp-undo" 
-          class="panel-button annotation-panel-subitem button-annotation-undo">
-          <img src="${Icons.icon_back}"/>
-        </div> 
-        <div id="button-annotation-stamp-clear" 
-          class="panel-button annotation-panel-subitem button-annotation-clear">
-          <img src="${Icons.icon_close}"/>
-        </div>
-        <div id="button-annotation-stamp-save" 
-          class="panel-button annotation-panel-subitem button-annotation-save">
-          <img src="${Icons.icon_ok}"/>
-        </div> 
-         <div id="button-annotation-stamp-options" 
-          class="panel-button annotation-panel-subitem button-annotation-options" >
-          <img src="${icon_options}"/>
-        </div> 
-        <div id="button-annotation-mode-stamp" 
-          class="panel-button annotation-panel-item">
-          <img src="${Icons.icon_stamp}"/>
-        </div> 
-      </div>
+     
       <div class="annotation-panel-row">
         <div id="button-annotation-pen-undo" 
           class="panel-button annotation-panel-subitem button-annotation-undo">
@@ -206,7 +185,29 @@ export const mainHtml = /*html*/`
           class="panel-button annotation-panel-item">
           <img src="${Icons.icon_text2}"/>
         </div>
-      </div>    
+      </div>
+       <div class="annotation-panel-row">
+        <div id="button-annotation-stamp-undo" 
+          class="panel-button annotation-panel-subitem button-annotation-undo">
+          <img src="${Icons.icon_back}"/>
+        </div> 
+        <div id="button-annotation-stamp-clear" 
+          class="panel-button annotation-panel-subitem button-annotation-clear">
+          <img src="${Icons.icon_close}"/>
+        </div>
+        <div id="button-annotation-stamp-save" 
+          class="panel-button annotation-panel-subitem button-annotation-save">
+          <img src="${Icons.icon_ok}"/>
+        </div> 
+         <div id="button-annotation-stamp-options" 
+          class="panel-button annotation-panel-subitem button-annotation-options" >
+          <img src="${icon_options}"/>
+        </div> 
+        <div id="button-annotation-mode-stamp" 
+          class="panel-button annotation-panel-item">
+          <img src="${Icons.icon_stamp}"/>
+        </div> 
+      </div>  
     </div>
 
     <div id="focused-annotation-panel">

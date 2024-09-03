@@ -172,28 +172,7 @@ const mainHtml = `
           <img src="${Icons.icon_pointer}"/>
         </div> 
       </div>
-      <div class="annotation-panel-row">
-        <div id="button-annotation-stamp-undo" 
-          class="panel-button annotation-panel-subitem button-annotation-undo">
-          <img src="${Icons.icon_back}"/>
-        </div> 
-        <div id="button-annotation-stamp-clear" 
-          class="panel-button annotation-panel-subitem button-annotation-clear">
-          <img src="${Icons.icon_close}"/>
-        </div>
-        <div id="button-annotation-stamp-save" 
-          class="panel-button annotation-panel-subitem button-annotation-save">
-          <img src="${Icons.icon_ok}"/>
-        </div> 
-         <div id="button-annotation-stamp-options" 
-          class="panel-button annotation-panel-subitem button-annotation-options" >
-          <img src="${icon_options}"/>
-        </div> 
-        <div id="button-annotation-mode-stamp" 
-          class="panel-button annotation-panel-item">
-          <img src="${Icons.icon_stamp}"/>
-        </div> 
-      </div>
+     
       <div class="annotation-panel-row">
         <div id="button-annotation-pen-undo" 
           class="panel-button annotation-panel-subitem button-annotation-undo">
@@ -259,7 +238,29 @@ const mainHtml = `
           class="panel-button annotation-panel-item">
           <img src="${Icons.icon_text2}"/>
         </div>
-      </div>    
+      </div>
+       <div class="annotation-panel-row">
+        <div id="button-annotation-stamp-undo" 
+          class="panel-button annotation-panel-subitem button-annotation-undo">
+          <img src="${Icons.icon_back}"/>
+        </div> 
+        <div id="button-annotation-stamp-clear" 
+          class="panel-button annotation-panel-subitem button-annotation-clear">
+          <img src="${Icons.icon_close}"/>
+        </div>
+        <div id="button-annotation-stamp-save" 
+          class="panel-button annotation-panel-subitem button-annotation-save">
+          <img src="${Icons.icon_ok}"/>
+        </div> 
+         <div id="button-annotation-stamp-options" 
+          class="panel-button annotation-panel-subitem button-annotation-options" >
+          <img src="${icon_options}"/>
+        </div> 
+        <div id="button-annotation-mode-stamp" 
+          class="panel-button annotation-panel-item">
+          <img src="${Icons.icon_stamp}"/>
+        </div> 
+      </div>  
     </div>
 
     <div id="focused-annotation-panel">
@@ -28114,9 +28115,9 @@ class AnnotatorService {
     }
     constructor(docService, pageService, customStampService, viewer) {
         this._annotationColors = [
+            [0, 0.804, 0, 0.5],
             [0, 0, 0, 0.5],
             [0.804, 0, 0, 0.5],
-            [0, 0.804, 0, 0.5],
             [0, 0, 0.804, 0.5],
             [1, 0.5, 0, 0.5],
             [1, 0.2, 1, 0.5],
@@ -29402,10 +29403,11 @@ class TsPdfViewer {
             this._annotatorService.annotator?.saveAnnotationAsync();
         };
         this.annotatorOptions = () => {
+            console.log("annotatorOptions this._viewer", this._viewer);
             const customEvent = new MouseEvent('contextmenu', {
                 bubbles: true,
                 cancelable: true,
-                clientX: (this._viewer.container.clientWidth),
+                clientX: (this._viewer.container.clientWidth / 2),
                 clientY: (this._viewer.container.clientHeight / 2)
             });
             this._viewer.container.dispatchEvent(customEvent);
