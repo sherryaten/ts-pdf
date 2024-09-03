@@ -75,7 +75,7 @@
     "crypto-es": "^2.1.0",
     "mathador": "^0.2.2",
     "pako": "^2.1.0",
-    "pdfjs-dist": "^4.5.136",
+    "pdfjs-dist": "^3.11.174",
     "ts-viewers-core": "^0.0.27"
   }
 }
