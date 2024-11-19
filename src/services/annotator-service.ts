@@ -122,15 +122,15 @@ export class AnnotatorService {
 
     // add or remove the css class which signals if any text markup annotator is used
     // (used for disabling annotation layers pointer events to allow page text selection)
-    if (this._mode === "text"
-      && (this._textSubmode === "highlight"
-      || this._textSubmode === "squiggly"
-      || this._textSubmode === "strikeout"
-      || this._textSubmode === "underline")) {
-      this._viewer.container.classList.add("mode-text-markup");
-    } else {      
+    // if (this._mode === "text"
+    //   && (this._textSubmode === "highlight"
+    //   || this._textSubmode === "squiggly"
+    //   || this._textSubmode === "strikeout"
+    //   || this._textSubmode === "underline")) {
+    //   this._viewer.container.classList.add("mode-text-markup");
+    // } else {      
       this._viewer.container.classList.remove("mode-text-markup");
-    }
+    // }
 
     switch (mode) {
       case "select":
