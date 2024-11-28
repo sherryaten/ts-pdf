@@ -155,6 +155,7 @@ export abstract class TextMarkupAnnotator extends TextAnnotator {
   }
 
   protected onTextSelectionChange = (e: TextSelectionChangeEvent) => {
+    console.log("onTextSelectionChange", e);
     this.updateCoords(e?.detail?.selectionInfos || []);
   };
   

@@ -176,7 +176,7 @@ export class XRefEntry implements Reference {
     const encoder = new TextEncoder();
     const groups = this.groupEntries(entries);
 
-    let bytes = new Uint8Array();
+    let bytes:any = new Uint8Array();
     let temp: Uint8Array;
     let line: string;
     for (const group of groups) {
@@ -290,7 +290,7 @@ export class XRefEntry implements Reference {
     const groups = this.groupEntries(entries);
     
     const index: number[] = [];
-    let bytes = new Uint8Array();
+    let bytes:any = new Uint8Array();
     let temp: Uint8Array;
     let entryV1: Uint8Array;
     let entryV2: Uint8Array;

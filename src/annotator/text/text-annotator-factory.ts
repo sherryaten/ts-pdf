@@ -13,8 +13,7 @@ import { TextUnderlineAnnotator } from "./text-underline-annotator";
 import { TextNoteAnnotator } from "./text-note-annotator";
 import { FreeTextAnnotator } from "./free-text-annotator";
 import { FreeTextCalloutAnnotator } from "./free-text-callout-annotator";
-// "highlight", "strikeout", "squiggly", "underline", , "freeTextCallout"
-export const textAnnotatorTypes = ["note", "freeText"] as const;
+export const textAnnotatorTypes = ["highlight","strikeout", "squiggly", "underline", "note", "freeText", "freeTextCallout"] as const;
 export type TextAnnotatorType =  typeof textAnnotatorTypes[number];
 
 export class TextAnnotatorFactory {
@@ -35,7 +34,7 @@ export class TextAnnotatorFactory {
       throw new Error("Viewer is not defined");
     }
     
-    type ||= this._lastType || "note";
+    type ||= this._lastType || "highlight";
     this._lastType = type;
 
     const color = options?.color || this._lastColor || [0, 0, 0, 0.9];
@@ -48,22 +47,22 @@ export class TextAnnotatorFactory {
       color,
       strokeWidth,
     };
-
+    console.log("createAnnotator type", type)
     switch (type) {
       case "note":
         return new TextNoteAnnotator(docService, pageService, viewer, combinedOptions);
       case "freeText":
         return new FreeTextAnnotator(docService, pageService, viewer, combinedOptions);
-      // case "freeTextCallout":
-      //   return new FreeTextCalloutAnnotator(docService, pageService, viewer, combinedOptions);
-      // case "highlight":
-      //   return new TextHighlightAnnotator(docService, pageService, viewer.container, combinedOptions);
-      // case "squiggly":
-      //   return new TextSquigglyAnnotator(docService, pageService, viewer.container, combinedOptions);
-      // case "strikeout":
-      //   return new TextStrikeoutAnnotator(docService, pageService, viewer.container, combinedOptions);
-      // case "underline":
-      //   return new TextUnderlineAnnotator(docService, pageService, viewer.container, combinedOptions);
+      case "freeTextCallout":
+        return new FreeTextCalloutAnnotator(docService, pageService, viewer, combinedOptions);
+      case "highlight":
+        return new TextHighlightAnnotator(docService, pageService, viewer.container, combinedOptions);
+      case "squiggly":
+        return new TextSquigglyAnnotator(docService, pageService, viewer.container, combinedOptions);
+      case "strikeout":
+        return new TextStrikeoutAnnotator(docService, pageService, viewer.container, combinedOptions);
+      case "underline":
+        return new TextUnderlineAnnotator(docService, pageService, viewer.container, combinedOptions);
       default:
         throw new Error(`Invalid geometric annotator type: ${type}`);
     }
