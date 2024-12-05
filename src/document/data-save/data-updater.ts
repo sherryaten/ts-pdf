@@ -267,7 +267,7 @@ export class DataUpdater {
     const newXrefEntries = this._changeData.exportEntries();
 
     // DEBUG
-    // console.log(newXrefEntries);
+    // //console.log(newXrefEntries);
 
     // create a new cross-reference section based on the previous one
     const newXref = this._lastXref.createUpdate(newXrefEntries, newXrefOffset);

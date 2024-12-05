@@ -98,9 +98,9 @@ export function calcPdfBBoxToRectMatrices(bBox: Quadruple, rect: Quadruple, matr
   const matAA = Mat3.fromMat3(matAP).multiply(matA);
 
   // DEBUG
-  // console.log(matAP.toFloatShortArray());
-  // console.log(matA.toFloatShortArray());
-  // console.log(matAA.toFloatShortArray());    
+  // //console.log(matAP.toFloatShortArray());
+  // //console.log(matA.toFloatShortArray());
+  // //console.log(matAA.toFloatShortArray());    
 
   return {matAP, matA, matAA};
 }

@@ -78,7 +78,7 @@ export class StrikeoutAnnotation extends TextMarkupAnnotation {
         end: parseInfo.bounds.end,
       };
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }  

@@ -27,7 +27,7 @@ export class TextSquigglyAnnotator extends TextMarkupAnnotator {
     for (const dto of dtos) {      
       const annotation = SquigglyAnnotation.createFromDto(dto);
       // DEBUG
-      console.log(annotation);
+      //console.log(annotation);
       await this._docService.appendAnnotationToPageAsync(dto.pageId, annotation);
     }
     

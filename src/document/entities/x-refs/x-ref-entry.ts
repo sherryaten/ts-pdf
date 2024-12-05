@@ -104,7 +104,7 @@ export class XRefEntry implements Reference {
     const entryLength = w1 + w2 + w3;
 
     // DEBUG
-    // console.log(`W: ${w1} ${w2} ${w3} (${entryLength}), L: ${bytes.length}`);
+    // //console.log(`W: ${w1} ${w2} ${w3} (${entryLength}), L: ${bytes.length}`);
 
     if (bytes.length % entryLength) {
       throw new Error("Incorrect stream length");
@@ -328,7 +328,7 @@ export class XRefEntry implements Reference {
     }
 
     // DEBUG
-    // console.log(`W: ${w1} ${w2} ${w3} (${w1 + w2 + w3}), L: ${bytes.length}`);
+    // //console.log(`W: ${w1} ${w2} ${w3} (${w1 + w2 + w3}), L: ${bytes.length}`);
 
     return {bytes, index};
   }

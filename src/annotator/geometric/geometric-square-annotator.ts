@@ -43,7 +43,7 @@ export class GeometricSquareAnnotator extends GeometricAnnotator {
     const dto = this.buildAnnotationDto();
     const annotation = SquareAnnotation.createFromDto(dto);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

@@ -292,7 +292,7 @@ export abstract class AnnotationDict extends PdfDict implements RenderableAnnota
         return await renderer.renderAsync();
       }
       catch (e) {
-        console.log(`Annotation stream render error: ${e.message}`);
+        //console.log(`Annotation stream render error: ${e.message}`);
       }
     }
     return null;    
@@ -395,7 +395,7 @@ export abstract class AnnotationDict extends PdfDict implements RenderableAnnota
     const end = bounds.contentEnd || bounds.end; 
 
     // DEBUG
-    // console.log(parser.sliceChars(start, end));    
+    // //console.log(parser.sliceChars(start, end));    
     
     let i = await parser.skipToNextNameAsync(start, end - 1);
     let name: string;

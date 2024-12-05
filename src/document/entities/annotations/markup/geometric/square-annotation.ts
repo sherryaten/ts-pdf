@@ -87,7 +87,7 @@ export class SquareAnnotation extends GeometricAnnotation {
         end: parseInfo.bounds.end,
       };
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }

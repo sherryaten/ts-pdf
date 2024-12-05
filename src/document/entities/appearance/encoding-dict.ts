@@ -57,7 +57,7 @@ export class EncodingDict extends PdfDict {
       await pdfObject.parsePropsAsync(parseInfo);
       return {value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end};
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }
@@ -91,7 +91,7 @@ export class EncodingDict extends PdfDict {
     const end = bounds.contentEnd || bounds.end; 
     
     // DEBUG
-    // console.log(parser.sliceChars(start, end));  
+    // //console.log(parser.sliceChars(start, end));  
     
     let i = await parser.skipToNextNameAsync(start, end - 1);
     let name: string;

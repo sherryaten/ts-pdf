@@ -3850,7 +3850,7 @@ export function getCharCodesMapByCode(encoding: "StandardEncoding" | "WinAnsiEnc
       prop = "utfCode";
       break;
     default:
-      console.log(`Unsupported encoding: '${encoding}'`);
+      //console.log(`Unsupported encoding: '${encoding}'`);
       return map;
   }
   for (const [, info] of Object.entries(pdfCharCodesByName)) {

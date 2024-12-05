@@ -47,7 +47,7 @@ export class GeometricPolygonAnnotator extends GeometricAnnotator {
     const dto = this.buildAnnotationDto();
     const annotation = PolygonAnnotation.createFromDto(dto);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

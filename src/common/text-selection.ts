@@ -156,8 +156,8 @@ function getSelectionInfosFromRangeSpans(range: Range): TextSelectionInfo[] {
     }
     
     // DEBUG
-    // console.log(parent);  
-    // console.log(parent.getBoundingClientRect());  
+    // //console.log(parent);  
+    // //console.log(parent.getBoundingClientRect());  
 
     // get all span corners positions
     const spanBlVec = new Vec2();
@@ -168,8 +168,8 @@ function getSelectionInfosFromRangeSpans(range: Range): TextSelectionInfo[] {
       const {x, y} = dummy.getBoundingClientRect();
 
       // DEBUG
-      // console.log(dummy);          
-      // console.log(dummy.getBoundingClientRect());      
+      // //console.log(dummy);          
+      // //console.log(dummy.getBoundingClientRect());      
 
       if (dummy.classList.contains("bl")) {
         spanBlVec.set(x, y);

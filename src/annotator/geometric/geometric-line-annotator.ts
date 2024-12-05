@@ -45,7 +45,7 @@ export class GeometricLineAnnotator extends GeometricAnnotator {
     const dto = this.buildAnnotationDto();
     const annotation = await LineAnnotation.createFromDtoAsync(dto, this._docService.fontMap);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

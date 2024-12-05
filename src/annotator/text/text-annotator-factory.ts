@@ -47,7 +47,7 @@ export class TextAnnotatorFactory {
       color,
       strokeWidth,
     };
-    console.log("createAnnotator type", type)
+    //console.log("createAnnotator type", type)
     switch (type) {
       case "note":
         return new TextNoteAnnotator(docService, pageService, viewer, combinedOptions);

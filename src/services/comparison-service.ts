@@ -220,28 +220,28 @@ export class ComparisonService {
     }
   
     // DEBUG
-    // console.log(changedPixels);
+    // //console.log(changedPixels);
     // return changedPixels.map(x => [x.x, x.y, x.x, x.y]);
   
     // clusterise pixels
     const clusters = await DBSCAN.runAsync(changedPixels, threshold, 1);
   
     // DEBUG
-    // console.log(clusters);
+    // //console.log(clusters);
     // return clusters.flat().map(x => [x.x, x.y, x.x, x.y]);
   
     // get AABBs for clusters
     const aabbs = this.convertClustersToAabbs(clusters);
       
     // DEBUG
-    // console.log(aabbs);
+    // //console.log(aabbs);
     // return aabbs;
   
     // merge intersecting AABBs
     const mergedAabbs = this.mergeIntersectingAabbs(aabbs);
       
     // DEBUG
-    // console.log(mergedAabbs);
+    // //console.log(mergedAabbs);
   
     return mergedAabbs;
   }

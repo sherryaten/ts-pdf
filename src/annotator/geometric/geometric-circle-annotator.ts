@@ -45,7 +45,7 @@ export class GeometricCircleAnnotator extends GeometricAnnotator {
     const dto = this.buildAnnotationDto();
     const annotation = CircleAnnotation.createFromDto(dto);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

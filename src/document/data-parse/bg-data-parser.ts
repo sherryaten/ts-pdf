@@ -100,15 +100,15 @@ export class BgDataParser implements DataParser {
         if (e.data.type === "success") {
           resolve();
         } else {
-          console.log(e);
-          console.log(e.data);
+          //console.log(e);
+          //console.log(e.data);
 
           reject(e);
         }
       };
       worker.onerror = (e) => {
-        console.log(e);
-        console.log(e.message);        
+        //console.log(e);
+        //console.log(e.message);        
         
         reject(e);
       };
@@ -438,7 +438,7 @@ export class BgDataParser implements DataParser {
       const onMessage = (e: MessageEvent<any>) => { 
         if (e.data.id !== commandId) {
           // DEBUG
-          // console.log(e.data.id);          
+          // //console.log(e.data.id);          
           return;
         }
         this._workerOnMessageHandlers.delete(onMessage);

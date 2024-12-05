@@ -165,7 +165,7 @@ export class ImageStream extends PdfStream {
       await pdfObject.parsePropsAsync(parseInfo);
       return {value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end};
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }
@@ -252,12 +252,12 @@ export class ImageStream extends PdfStream {
       // const img = new Image();
       // img.onload = () => {
       //   URL.revokeObjectURL(url);
-      //   console.log(img);
+      //   //console.log(img);
       //   document.body.append(img);
       // };
       // img.onerror = (e: string | Event) => {
-      //   console.log(this.Filter);
-      //   console.log(e);
+      //   //console.log(this.Filter);
+      //   //console.log(e);
       // };
       // img.src = url;
     }

@@ -40,7 +40,7 @@ export class IndexedColorSpaceArray implements IEncodable {
     this.lookupArray = lookupArray;
 
     // DEBUG
-    // console.log(this);
+    // //console.log(this);
   }
 
   static async parseAsync(parseInfo: ParserInfo, 
@@ -54,7 +54,7 @@ export class IndexedColorSpaceArray implements IEncodable {
     const start = i;
     if (i < 0 || i > parser.maxIndex 
       || !(await parser.isCodeAtAsync(start, codes.L_BRACKET))) {
-      console.log("Color space array start not found");
+      //console.log("Color space array start not found");
       return null;
     }    
     i++;
@@ -62,21 +62,21 @@ export class IndexedColorSpaceArray implements IEncodable {
     const type = await parser.parseNameAtAsync(i);
     if (!type || type.value !== "/Indexed") {
       // not an indexed color space
-      console.log("Array is not representing an indexed color space");
+      //console.log("Array is not representing an indexed color space");
       return null;
     }    
     i = type.end + 1;
 
     const base = await parser.parseNameAtAsync(i);
     if (!base) {
-      console.log("Can't parse base color space name of the indexed color space");
+      //console.log("Can't parse base color space name of the indexed color space");
       return null;
     }
     i = base.end + 2;
 
     const highestValue = await parser.parseNumberAtAsync(i);
     if (!highestValue || isNaN(highestValue.value)) {
-      console.log("Can't parse the highest value of the indexed color space");
+      //console.log("Can't parse the highest value of the indexed color space");
       return null;
     }
     i = highestValue.end + 1;
@@ -111,7 +111,7 @@ export class IndexedColorSpaceArray implements IEncodable {
         end: i - 1,
       };
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }

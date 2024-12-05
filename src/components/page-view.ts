@@ -331,7 +331,7 @@ export class PageView implements PageInfo {
       if (error instanceof RenderingCancelledException) {
         return false;
       } else {
-        console.log(error.message);
+        //console.log(error.message);
       }
     } finally {
       this._renderTask = null;

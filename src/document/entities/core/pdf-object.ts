@@ -82,7 +82,7 @@ export abstract class PdfObject implements IEncodable {
   protected onChange: ProxyHandler<PdfObject> = {
     set: (target: PdfObject, prop: string, value: any) => {  
       // DEBUG
-      // console.log(this._edited);
+      // //console.log(this._edited);
       
       if (prop[0] !== "_" && prop[0] !== "$") {
         // if any public property except those starting with '$' changed, 
@@ -90,8 +90,8 @@ export abstract class PdfObject implements IEncodable {
         this._edited ||= true;
 
         // DEBUG
-        // console.log(`EDITED prop ${prop}`);
-        // console.log(this);
+        // //console.log(`EDITED prop ${prop}`);
+        // //console.log(this);
   
         if (this.$onChangeAction) {     
           this.$onChangeAction();

@@ -58,7 +58,7 @@ export class PenAnnotator extends Annotator {
     const dto = this.buildAnnotationDto(this._annotationPathData);
     const annotation = InkAnnotation.createFromDto(dto);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

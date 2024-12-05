@@ -46,7 +46,7 @@ export class GeometricPolylineAnnotator extends GeometricAnnotator {
     const dto = this.buildAnnotationDto();
     const annotation = PolylineAnnotation.createFromDto(dto);
     // DEBUG
-    // console.log(annotation);
+    // //console.log(annotation);
 
     await this._docService.appendAnnotationToPageAsync(pageId, annotation);
     

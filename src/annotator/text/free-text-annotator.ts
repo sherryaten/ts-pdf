@@ -56,7 +56,7 @@ export class FreeTextAnnotator extends TextAnnotator {
       if (dto) {
         const annotation = await FreeTextAnnotation.createFromDtoAsync(dto, this._docService.fontMap);
         // DEBUG
-        // console.log(annotation);
+        // //console.log(annotation);
     
         // append the current temp annotation to the page
         await this._docService.appendAnnotationToPageAsync(pageId, annotation);

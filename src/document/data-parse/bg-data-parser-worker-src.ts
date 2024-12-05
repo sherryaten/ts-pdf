@@ -350,7 +350,7 @@ function processData(data) {
     return; 
   }
 
-  // console.log(JSON.stringify(data));
+  // //console.log(JSON.stringify(data));
   try {
     let result;
     switch (name) { 
@@ -458,10 +458,10 @@ function processData(data) {
     default:
       throw new Error("Unknown command name: " + name);
     }    
-    // console.log(JSON.stringify(result));
+    // //console.log(JSON.stringify(result));
     sendResponse({id, name, type: "success", result});
   } catch (e) {
-    // console.log(JSON.stringify(e));
+    // //console.log(JSON.stringify(e));
     sendResponse({id, name, type: "error", message: e.message});
   }
 }

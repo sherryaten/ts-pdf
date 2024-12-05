@@ -53,7 +53,7 @@ export class SoftMaskDict extends PdfDict {
       await pdfObject.parsePropsAsync(parseInfo);
       return {value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end};
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }

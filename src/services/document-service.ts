@@ -264,7 +264,7 @@ export class DocumentService {
         });
       } else {
         // throw new Error(`Page with id '${pageId}' not found`);
-        console.log(`Page with id '${pageId}' not found`);
+        //console.log(`Page with id '${pageId}' not found`);
       }
     });    
 
@@ -331,7 +331,7 @@ export class DocumentService {
   async removeAnnotationAsync(annotations: AnnotationDto[]) {
     for(let i = 0; i < annotations.length; i++){
       const annotationDict = await this.getAnnotationDictAsync(annotations[i]);
-      console.log("removeAnnotationAsync",annotationDict);
+      //console.log("removeAnnotationAsync",annotationDict);
       await this.removeAnnotationByObject(annotationDict,true);
     }  
     await this.parseSupportedAnnotationsAsync();
@@ -437,11 +437,11 @@ export class DocumentService {
     }}
     this._xrefs = xrefs;
     // DEBUG
-    // console.log(this._xrefs); 
+    // //console.log(this._xrefs); 
 
     this._referenceData = new ReferenceData(xrefs);   
     // DEBUG
-    // console.log(this._referenceData);  
+    // //console.log(this._referenceData);  
   }
 
   private async initAsync() {
@@ -735,7 +735,7 @@ export class DocumentService {
     pages.forEach(x => this._pageById.set(x.ref.id, x));
 
     // DEBUG
-    // console.log(this._pageById);
+    // //console.log(this._pageById);
   }   
 
   private async parseSupportedAnnotationsAsync() {
@@ -744,8 +744,8 @@ export class DocumentService {
     if (!this._catalog) {      
       await this.parsePageTreeAsync(); 
       // DEBUG
-      // console.log(this._catalog);
-      // console.log(this._pages);
+      // //console.log(this._catalog);
+      // //console.log(this._pages);
     }
 
     const annotIdsByPageId = new Map<number, ObjectId[]>();
@@ -786,7 +786,7 @@ export class DocumentService {
     }
 
     // DEBUG
-    // console.log(annotationMap);
+    // //console.log(annotationMap);
 
     this._annotIdsByPageId = annotIdsByPageId;
     this._supportedAnnotsByPageId = annotationMap;

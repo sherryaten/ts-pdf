@@ -14,7 +14,7 @@ export class TextHighlightAnnotator extends TextMarkupAnnotator {
   constructor(docService: DocumentService, pageService: PageService, 
     parent: HTMLDivElement, options?: TextAnnotatorOptions) {
     super(docService, pageService, parent, options || {});
-    console.log("TextHighlightAnnotator constructor");    
+    //console.log("TextHighlightAnnotator constructor");    
     this.init();
   }
   
@@ -27,7 +27,7 @@ export class TextHighlightAnnotator extends TextMarkupAnnotator {
     for (const dto of dtos) {      
       const annotation = HighlightAnnotation.createFromDto(dto);
       // DEBUG
-      // console.log(annotation);
+      // //console.log(annotation);
       await this._docService.appendAnnotationToPageAsync(dto.pageId, annotation);
     }
     
@@ -38,7 +38,7 @@ export class TextHighlightAnnotator extends TextMarkupAnnotator {
    * clear the old svg if present and draw new ones instead
    */
   protected redraw() {
-    console.log("redraw");    
+    //console.log("redraw");    
     const [r, g, b, a] = this._color || [0, 0, 0, 1];
 
     this._svgGroupByPageId.forEach((group, pageId) => {

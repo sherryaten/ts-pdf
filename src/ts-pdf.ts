@@ -314,7 +314,7 @@ export class TsPdfViewer {
     try {
       await this._docService?.appendSerializedAnnotationsAsync(dtos);
     } catch (e) {
-      console.log(`Error while importing annotations: ${e.message}`);
+      //console.log(`Error while importing annotations: ${e.message}`);
     }
   }
 
@@ -327,7 +327,7 @@ export class TsPdfViewer {
       const dtos: AnnotationDto[] = JSON.parse(json);
       await this._docService?.appendSerializedAnnotationsAsync(dtos);
     } catch (e) {
-      console.log(`Error while importing annotations: ${e.message}`);
+      //console.log(`Error while importing annotations: ${e.message}`);
     }
   }
 
@@ -353,7 +353,7 @@ export class TsPdfViewer {
     try {
       this._customStampsService.importCustomStamps(customStamps);
     } catch (e) {
-      console.log(`Error while importing custom stamps: ${e.message}`);
+      //console.log(`Error while importing custom stamps: ${e.message}`);
     }
   }
 
@@ -362,7 +362,7 @@ export class TsPdfViewer {
       const customStamps: CustomStampCreationInfo[] = JSON.parse(json);
       this._customStampsService.importCustomStamps(customStamps);
     } catch (e) {
-      console.log(`Error while importing custom stamps: ${e.message}`);
+      //console.log(`Error while importing custom stamps: ${e.message}`);
     }
   }
 
@@ -767,7 +767,7 @@ export class TsPdfViewer {
   };
 
   private annotatorOptions = () => {
-    console.log("annotatorOptions this._viewer",this._viewer);
+    //console.log("annotatorOptions this._viewer",this._viewer);
     // var ev = document.createEvent('HTMLEvents');
     // ev.clientX = containerWidth;
     // ev.clientY = 100;
@@ -874,24 +874,24 @@ export class TsPdfViewer {
     if (!this._annotatorService || !mode) {
       return;
     }
-    console.log("setAnnotationMode: ", mode);
+    //console.log("setAnnotationMode: ", mode);
     const prevMode = this._annotatorService.mode;
     this._shadowRoot.querySelector(`#button-annotation-mode-${prevMode}`)?.classList.remove("on");
     this._shadowRoot.querySelector(`#button-annotation-mode-${mode}`)?.classList.add("on");
 
     const menus = this._shadowRoot.querySelectorAll('.button-annotation-options');
-    console.log(menus);
+    //console.log(menus);
     menus.forEach(menu => {
       (menu as HTMLElement)?.classList.remove("button-annotation-options-show")
     });
     const options = this._shadowRoot.querySelector(`#button-annotation-${mode}-options`);
-    console.log(options);
+    //console.log(options);
     if (options) {
       (options as HTMLElement)?.classList.add("button-annotation-options-show")
     }
     
     // const currentPage = this._pageService.getCurrentPage();
-    // console.log("currentPage",currentPage);
+    // //console.log("currentPage",currentPage);
     // if(currentPage?.index == 0){
     //   this._pageService.requestSetCurrentPageIndex(currentPage?.index+1);
     //   setTimeout(() => {this._pageService.requestSetCurrentPageIndex(currentPage?.index)}, 800);

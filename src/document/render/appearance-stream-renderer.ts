@@ -136,7 +136,7 @@ export class AppearanceStreamRenderer {
                 j = arrayNumberResult.end + 1;
                 break;
               default:
-                console.log(`Unsupported value type in AP stream parameter array: ${nextArrayValueType}`); 
+                //console.log(`Unsupported value type in AP stream parameter array: ${nextArrayValueType}`); 
                 j = await parser.findDelimiterIndexAsync(true, j + 1);                  
                 break;
             }
@@ -596,7 +596,7 @@ export class AppearanceStreamRenderer {
     const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
     this.addDescriptionDataAttribute(image, "astream-image");
     image.onerror = e => {
-      console.log(`Loading external image stream failed: ${e}`);
+      //console.log(`Loading external image stream failed: ${e}`);
     };
     image.setAttribute("href", url);
     image.setAttribute("width", imageStream.Width + "");
@@ -631,7 +631,7 @@ export class AppearanceStreamRenderer {
     this.setTextStateFont(fontDict);
 
     if (!text) {
-      console.log(`Can't decode the stream text parameter: '${textParam}'`);
+      //console.log(`Can't decode the stream text parameter: '${textParam}'`);
       return null;
     }
 

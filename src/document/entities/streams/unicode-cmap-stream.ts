@@ -33,7 +33,7 @@ export class UnicodeCmapStream extends PdfStream {
       await pdfObject.parsePropsAsync(parseInfo);
       return {value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end};
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }
@@ -60,7 +60,7 @@ export class UnicodeCmapStream extends PdfStream {
     }
 
     // DEBUG
-    // console.log(result);
+    // //console.log(result);
     return result;
   }
 
@@ -189,11 +189,11 @@ export class UnicodeCmapStream extends PdfStream {
     await this.parseCharRangesMapAsync(parser, decoder);
 
     // DEBUG
-    // console.log(this);
-    // console.log(this.decodedStreamDataChars);
-    // console.log(this._map);
-    // console.log(this._codeRanges);
-    // console.log(this.hexBytesToUtfString(null));
+    // //console.log(this);
+    // //console.log(this.decodedStreamDataChars);
+    // //console.log(this._map);
+    // //console.log(this._codeRanges);
+    // //console.log(this.hexBytesToUtfString(null));
   }
 
   /**

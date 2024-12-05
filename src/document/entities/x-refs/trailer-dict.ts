@@ -61,7 +61,7 @@ export class TrailerDict extends PdfDict {
       await pdfObject.parsePropsAsync(parseInfo);
       return {value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end};
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       return null;
     }
   }
@@ -180,7 +180,7 @@ export class TrailerDict extends PdfDict {
     };
 
     if (!this.Root) {
-      console.log("Trailer 'Root' property is missing. Look like the file is linearized, which is not oficially supported atm!");
+      //console.log("Trailer 'Root' property is missing. Look like the file is linearized, which is not oficially supported atm!");
       // TODO: add additional check if file is actually linearized. Throw if not.
       // TODO: uncomment when the check for linearization will be implemented
       // throw new Error("Not all required properties parsed: Root is missing");
