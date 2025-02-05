@@ -2469,14 +2469,10 @@ class BgDataParser {
                     resolve();
                 }
                 else {
-                    //console.log(e);
-                    //console.log(e.data);
                     reject(e);
                 }
             };
             worker.onerror = (e) => {
-                //console.log(e);
-                //console.log(e.message);
                 reject(e);
             };
             worker.postMessage({ name: "data-set", bytes: buffer }, [buffer]);
@@ -4885,7 +4881,6 @@ class DecodeParamsDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -5965,7 +5960,6 @@ class TrailerStream extends PdfStream {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -6200,7 +6194,6 @@ class TextStream extends PdfStream {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -6251,25 +6244,21 @@ class IndexedColorSpaceArray {
         const start = i;
         if (i < 0 || i > parser.maxIndex
             || !(await parser.isCodeAtAsync(start, codes.L_BRACKET))) {
-            //console.log("Color space array start not found");
             return null;
         }
         i++;
         const type = await parser.parseNameAtAsync(i);
         if (!type || type.value !== "/Indexed") {
-            //console.log("Array is not representing an indexed color space");
             return null;
         }
         i = type.end + 1;
         const base = await parser.parseNameAtAsync(i);
         if (!base) {
-            //console.log("Can't parse base color space name of the indexed color space");
             return null;
         }
         i = base.end + 2;
         const highestValue = await parser.parseNumberAtAsync(i);
         if (!highestValue || isNaN(highestValue.value)) {
-            //console.log("Can't parse the highest value of the indexed color space");
             return null;
         }
         i = highestValue.end + 1;
@@ -6306,7 +6295,6 @@ class IndexedColorSpaceArray {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -6378,7 +6366,6 @@ class ImageStream extends PdfStream {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -6821,7 +6808,6 @@ class ObjectMapDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -6926,7 +6912,6 @@ class UnicodeCmapStream extends PdfStream {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -10892,7 +10877,6 @@ function getCharCodesMapByCode(encoding) {
             prop = "utfCode";
             break;
         default:
-            //console.log(`Unsupported encoding: '${encoding}'`);
             return map;
     }
     for (const [, info] of Object.entries(pdfCharCodesByName)) {
@@ -10933,7 +10917,6 @@ class EncodingDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -11072,7 +11055,6 @@ class FontDescriptorDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -11466,7 +11448,6 @@ class FontDict extends PdfDict {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -11905,7 +11886,6 @@ class SoftMaskDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -12013,7 +11993,6 @@ class GraphicsStateDict extends PdfDict {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -12377,7 +12356,6 @@ class ResourceDict extends PdfDict {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -12631,7 +12609,6 @@ class MeasureDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -12764,7 +12741,6 @@ class TransparencyGroupDict extends GroupDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -12912,7 +12888,6 @@ class XFormStream extends PdfStream {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -13541,7 +13516,6 @@ class AppearanceStreamRenderer {
                                 j = arrayNumberResult.end + 1;
                                 break;
                             default:
-                                //console.log(`Unsupported value type in AP stream parameter array: ${nextArrayValueType}`);
                                 j = await parser.findDelimiterIndexAsync(true, j + 1);
                                 break;
                         }
@@ -13927,7 +13901,6 @@ class AppearanceStreamRenderer {
         const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
         this.addDescriptionDataAttribute(image, "astream-image");
         image.onerror = e => {
-            //console.log(`Loading external image stream failed: ${e}`);
         };
         image.setAttribute("href", url);
         image.setAttribute("width", imageStream.Width + "");
@@ -13955,7 +13928,6 @@ class AppearanceStreamRenderer {
         const text = this.decodeTextParam(textParam, fontDict);
         this.setTextStateFont(fontDict);
         if (!text) {
-            //console.log(`Can't decode the stream text parameter: '${textParam}'`);
             return null;
         }
         const matrix = new Mat3()
@@ -14275,7 +14247,6 @@ class BorderStyleDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -14373,7 +14344,6 @@ class AppearanceDict extends PdfDict {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -14608,7 +14578,6 @@ class BorderEffectDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -14903,7 +14872,6 @@ class AnnotationDict extends PdfDict {
                 return await renderer.renderAsync();
             }
             catch (e) {
-                //console.log(`Annotation stream render error: ${e.message}`);
             }
         }
         return null;
@@ -16593,7 +16561,6 @@ class ObjectStream extends PdfStream {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -16752,7 +16719,6 @@ class CryptFilterDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -16881,7 +16847,6 @@ class CryptMapDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -16973,7 +16938,6 @@ class EncryptionDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -17217,7 +17181,6 @@ class TrailerDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -17315,9 +17278,7 @@ class TrailerDict extends PdfDict {
                 break;
             }
         }
-        if (!this.Root) {
-            //console.log("Trailer 'Root' property is missing. Look like the file is linearized, which is not oficially supported atm!");
-        }
+        if (!this.Root) ;
         if (!this.Size) {
             throw new Error("Not all required properties parsed: Size is missing");
         }
@@ -17643,7 +17604,6 @@ class CatalogDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -17740,7 +17700,6 @@ class PageDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -17977,7 +17936,6 @@ class PageTreeDict extends PdfDict {
             return { value: pdfObject, start: parseInfo.bounds.start, end: parseInfo.bounds.end };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -20956,7 +20914,6 @@ class StampAnnotation extends MarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -21169,7 +21126,6 @@ class TextAnnotation extends MarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -21337,7 +21293,6 @@ class InkAnnotation extends MarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -21633,7 +21588,6 @@ class SquareAnnotation extends GeometricAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -21858,7 +21812,6 @@ class CircleAnnotation extends GeometricAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -22193,7 +22146,6 @@ class PolygonAnnotation extends PolyAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -22408,7 +22360,6 @@ class PolylineAnnotation extends PolyAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -22688,7 +22639,6 @@ class LineAnnotation extends GeometricAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -23290,7 +23240,6 @@ class HighlightAnnotation extends TextMarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -23439,7 +23388,6 @@ class UnderlineAnnotation extends TextMarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -23578,7 +23526,6 @@ class StrikeoutAnnotation extends TextMarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -23727,7 +23674,6 @@ class SquigglyAnnotation extends TextMarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -23955,7 +23901,6 @@ class FreeTextAnnotation extends MarkupAnnotation {
             };
         }
         catch (e) {
-            //console.log(e.message);
             return null;
         }
     }
@@ -24798,6 +24743,8 @@ class DocumentService {
             this._eventService.removeListener(annotFocusRequestEvent, this.onAnnotationFocusRequest);
             this._docParser?.destroy();
             BgDataParser.destroy();
+        }).catch(e => {
+            console.log("error", e);
         });
     }
     tryAuthenticate(password = "") {
@@ -24843,9 +24790,6 @@ class DocumentService {
                     supportedAnnotations: pageAnnotations || [],
                 });
             }
-            else {
-                //console.log(`Page with id '${pageId}' not found`);
-            }
         });
         const updater = new DataUpdater(this._data, this._xrefs[0], this._referenceData, this._authResult);
         const updatedBytes = updater.getDataWithUpdatedAnnotations(updaterData);
@@ -24887,7 +24831,6 @@ class DocumentService {
     async removeAnnotationAsync(annotations) {
         for (let i = 0; i < annotations.length; i++) {
             const annotationDict = await this.getAnnotationDictAsync(annotations[i]);
-            //console.log("removeAnnotationAsync", annotationDict);
             await this.removeAnnotationByObject(annotationDict, true);
         }
         await this.parseSupportedAnnotationsAsync();
@@ -25787,9 +25730,6 @@ class PageView {
         catch (error) {
             if (error instanceof RenderingCancelledException) {
                 return false;
-            }
-            else {
-                //console.log(error.message);
             }
         }
         finally {
@@ -27784,7 +27724,6 @@ class TextMarkupAnnotator extends TextAnnotator {
         }
     }
     onTextSelectionChange = (e) => {
-        //console.log("onTextSelectionChange", e);
         this.updateCoords(e?.detail?.selectionInfos || []);
     };
     buildAnnotationDtos(type) {
@@ -27814,7 +27753,6 @@ class TextMarkupAnnotator extends TextAnnotator {
 class TextHighlightAnnotator extends TextMarkupAnnotator {
     constructor(docService, pageService, parent, options) {
         super(docService, pageService, parent, options || {});
-        //console.log("TextHighlightAnnotator constructor");
         this.init();
     }
     async saveAnnotationAsync() {
@@ -27829,7 +27767,6 @@ class TextHighlightAnnotator extends TextMarkupAnnotator {
         this.clear();
     }
     redraw() {
-        //console.log("redraw");
         const [r, g, b, a] = this._color || [0, 0, 0, 1];
         this._svgGroupByPageId.forEach((group, pageId) => {
             group.innerHTML = "";
@@ -27860,7 +27797,6 @@ class TextSquigglyAnnotator extends TextMarkupAnnotator {
         const dtos = this.buildAnnotationDtos("/Squiggly");
         for (const dto of dtos) {
             const annotation = SquigglyAnnotation.createFromDto(dto);
-            //console.log(annotation);
             await this._docService.appendAnnotationToPageAsync(dto.pageId, annotation);
         }
         this.clear();
@@ -28551,7 +28487,6 @@ class TextAnnotatorFactory {
             color,
             strokeWidth,
         };
-        //console.log("createAnnotator type", type);
         switch (type) {
             case "note":
                 return new TextNoteAnnotator(docService, pageService, viewer, combinedOptions);
@@ -29918,7 +29853,6 @@ class TsPdfViewer {
             await this._docService?.appendSerializedAnnotationsAsync(dtos);
         }
         catch (e) {
-            //console.log(`Error while importing annotations: ${e.message}`);
         }
     }
     async importAnnotationsFromJsonAsync(json) {
@@ -29927,7 +29861,6 @@ class TsPdfViewer {
             await this._docService?.appendSerializedAnnotationsAsync(dtos);
         }
         catch (e) {
-            //console.log(`Error while importing annotations: ${e.message}`);
         }
     }
     async exportAnnotationsAsync() {
@@ -29943,7 +29876,6 @@ class TsPdfViewer {
             this._customStampsService.importCustomStamps(customStamps);
         }
         catch (e) {
-            //console.log(`Error while importing custom stamps: ${e.message}`);
         }
     }
     importCustomStampsFromJson(json) {
@@ -29952,7 +29884,6 @@ class TsPdfViewer {
             this._customStampsService.importCustomStamps(customStamps);
         }
         catch (e) {
-            //console.log(`Error while importing custom stamps: ${e.message}`);
         }
     }
     exportCustomStamps() {
@@ -30263,7 +30194,6 @@ class TsPdfViewer {
         this._annotatorService.annotator?.saveAnnotationAsync();
     };
     annotatorOptions = () => {
-        //console.log("annotatorOptions this._viewer", this._viewer);
         const customEvent = new MouseEvent('contextmenu', {
             bubbles: true,
             cancelable: true,
@@ -30353,17 +30283,14 @@ class TsPdfViewer {
         if (!this._annotatorService || !mode) {
             return;
         }
-        //console.log("setAnnotationMode: ", mode);
         const prevMode = this._annotatorService.mode;
         this._shadowRoot.querySelector(`#button-annotation-mode-${prevMode}`)?.classList.remove("on");
         this._shadowRoot.querySelector(`#button-annotation-mode-${mode}`)?.classList.add("on");
         const menus = this._shadowRoot.querySelectorAll('.button-annotation-options');
-        //console.log(menus);
         menus.forEach(menu => {
             menu?.classList.remove("button-annotation-options-show");
         });
         const options = this._shadowRoot.querySelector(`#button-annotation-${mode}-options`);
-        //console.log(options);
         if (options) {
             options?.classList.add("button-annotation-options-show");
         }
