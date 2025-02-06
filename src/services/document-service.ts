@@ -194,7 +194,9 @@ export class DocumentService {
   
       this._docParser?.destroy();
       BgDataParser.destroy();
-    });
+    }).catch(e => {
+      console.log("error",e)
+  });
   }
 
   tryAuthenticate(password = ""): boolean {
