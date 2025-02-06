@@ -310,6 +310,9 @@ export class ImageStream extends PdfStream {
           // img.src = url;
           // document.body.appendChild(img);  
         });
+      }).catch(e => {
+        console.log("hideSplashScreen error", e);
+        return null;
       });
       const imageUrl = await urlPromise; 
       this._imageUrl = imageUrl; 

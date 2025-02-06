@@ -1080,6 +1080,9 @@ export class TsPdfViewer {
 
       dialog.querySelector(".password-ok").addEventListener("click", ok);
       dialog.querySelector(".password-cancel").addEventListener("click", cancel);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
+      return null;
     });
 
     return passwordPromise;

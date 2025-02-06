@@ -274,6 +274,8 @@ export abstract class AnnotationDict extends PdfDict implements RenderableAnnota
         await this.updateRenderAsync(); 
         resolve();          
       }, 0);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
     });
 
     return this.lastRenderResult;
@@ -893,6 +895,8 @@ export abstract class AnnotationDict extends PdfDict implements RenderableAnnota
       this._tempTransformationMatrix.reset();
 
       resolve();
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
     });
 
     await this._transformationPromise;

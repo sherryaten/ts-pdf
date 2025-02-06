@@ -150,6 +150,9 @@ export class Viewer {
       
       // save the dialog close callback to the viewer property
       this._dialogClose = () => resolve(null);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
+      return null;
     });
 
     const result = await textPromise;

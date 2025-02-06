@@ -734,6 +734,8 @@ export class AppearanceStreamRenderer {
         tempContainer.remove();
         resolve(true);
       }, 0);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
     });
     
     // create a transparent text copy with large stroke width to simplify user interaction    

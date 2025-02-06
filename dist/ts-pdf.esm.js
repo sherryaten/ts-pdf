@@ -2456,7 +2456,9 @@ class BgDataParser {
                     reject("Free worker waiting timeout exceeded");
                 }
             }, 20);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         return await freeWorkerPromise;
     }
     static returnWorkerToPool(worker) {
@@ -2480,7 +2482,9 @@ class BgDataParser {
                 reject(e);
             };
             worker.postMessage({ name: "data-set", bytes: buffer }, [buffer]);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });;
         try {
             await workerPromise;
         }
@@ -2502,7 +2506,9 @@ class BgDataParser {
             };
             worker.onerror = (e) => reject(e);
             worker.postMessage({ name: "data-reset" });
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });;
         try {
             const buffer = await workerPromise;
             return buffer;
@@ -2677,7 +2683,9 @@ class BgDataParser {
                     this._prevWorkerReleasePromise = this.releaseWorkerAsync(freeWorker);
                 }, 50);
                 resolve(freeWorker);
-            });
+            }).catch(e => {
+                console.log("hideSplashScreen error", e);
+              });
         }
         const worker = await this._workerPromise;
         return worker;
@@ -2700,7 +2708,9 @@ class BgDataParser {
                 }
             };
             this._workerOnMessageHandlers.add(onMessage);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         worker.postMessage({ id: commandId, name: commandName, args: commandArgs });
         const result = await commandResultPromise;
         this._commandsInProgress--;
@@ -6484,7 +6494,9 @@ class ImageStream extends PdfStream {
                     const url = URL.createObjectURL(blob);
                     resolve(url);
                 });
-            });
+            }).catch(e => {
+                console.log("hideSplashScreen error", e);
+              });
             const imageUrl = await urlPromise;
             this._imageUrl = imageUrl;
             return imageUrl;
@@ -14050,7 +14062,9 @@ class AppearanceStreamRenderer {
                 tempContainer.remove();
                 resolve(true);
             }, 0);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         const clonedSvg = this.createSvgElement();
         this.addDescriptionDataAttribute(clonedSvg, "astream-text-selection-helper");
         const clonedPath = svgText.cloneNode(true);
@@ -14892,7 +14906,9 @@ class AnnotationDict extends PdfDict {
                 await this.updateRenderAsync();
                 resolve();
             }, 0);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         return this.lastRenderResult;
     }
     async renderApStreamAsync() {
@@ -15329,7 +15345,9 @@ class AnnotationDict extends PdfDict {
             }
             this._tempTransformationMatrix.reset();
             resolve();
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         await this._transformationPromise;
     }
     renderAppearance() {
@@ -29523,7 +29541,9 @@ class Viewer {
             dialog.querySelector(".text-ok").addEventListener("click", ok);
             dialog.querySelector(".text-cancel").addEventListener("click", cancel);
             this._dialogClose = () => resolve(null);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         const result = await textPromise;
         this._dialogClose = null;
         dialog.remove();
@@ -30511,7 +30531,9 @@ class TsPdfViewer {
             });
             dialog.querySelector(".password-ok").addEventListener("click", ok);
             dialog.querySelector(".password-cancel").addEventListener("click", cancel);
-        });
+        }).catch(e => {
+            console.log("hideSplashScreen error", e);
+          });
         return passwordPromise;
     };
     onViewerKeyDown = (event) => {

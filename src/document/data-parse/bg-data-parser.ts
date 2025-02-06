@@ -86,6 +86,9 @@ export class BgDataParser implements DataParser {
           reject("Free worker waiting timeout exceeded");
         }
       }, 20);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
+      return null
     });
     return await freeWorkerPromise;
   }
@@ -113,6 +116,8 @@ export class BgDataParser implements DataParser {
         reject(e);
       };
       worker.postMessage({name: "data-set", bytes: buffer}, [buffer]);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
     });
 
     try {
@@ -135,6 +140,9 @@ export class BgDataParser implements DataParser {
       };
       worker.onerror = (e) => reject(e);
       worker.postMessage({name: "data-reset"});
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
+      return null;
     });
 
     try {
@@ -421,6 +429,8 @@ export class BgDataParser implements DataParser {
         }, 50);      
 
         resolve(freeWorker);
+      }).catch(e => {
+        console.log("hideSplashScreen error", e);
       });
     }
 
@@ -449,6 +459,9 @@ export class BgDataParser implements DataParser {
         }
       };
       this._workerOnMessageHandlers.add(onMessage);
+    }).catch(e => {
+      console.log("hideSplashScreen error", e);
+      return null;
     });
 
     worker.postMessage({id: commandId, name: commandName, args: commandArgs});
