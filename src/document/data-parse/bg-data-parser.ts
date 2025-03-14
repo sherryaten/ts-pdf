@@ -412,25 +412,28 @@ export class BgDataParser implements DataParser {
 
     if (!this._workerPromise) {
       this._workerPromise = new Promise<Worker>(async (resolve, reject) => {
-        const dataBuffer = this._data;
-        const freeWorker = await BgDataParser.getFreeWorkerFromPoolAsync();
-        await BgDataParser.transferDataToWorker(freeWorker, dataBuffer);
-        freeWorker.onmessage = this.onWorkerMessage;
-        freeWorker.onerror = this.onWorkerError;
+        try {
+          const dataBuffer = this._data;
+          const freeWorker = await BgDataParser.getFreeWorkerFromPoolAsync();
+          await BgDataParser.transferDataToWorker(freeWorker, dataBuffer);
+          freeWorker.onmessage = this.onWorkerMessage;
+          freeWorker.onerror = this.onWorkerError;
 
-        // return worker back to pool if not busy in 50ms
-        const workerReleaseInterval = setInterval(async () => {
-          if (this._commandsInProgress > 0 || this._workerOnMessageHandlers.size) {
-            // don't return worker if there is some commands in progress
-            return;
-          }
-          clearInterval(workerReleaseInterval);
-          this._prevWorkerReleasePromise = this.releaseWorkerAsync(freeWorker);
-        }, 50);      
+          // return worker back to pool if not busy in 50ms
+          const workerReleaseInterval = setInterval(async () => {
+            if (this._commandsInProgress > 0 || this._workerOnMessageHandlers.size) {
+              // don't return worker if there is some commands in progress
+              return;
+            }
+            clearInterval(workerReleaseInterval);
+            this._prevWorkerReleasePromise = this.releaseWorkerAsync(freeWorker);
+          }, 50);      
 
-        resolve(freeWorker);
-      }).catch(e => {
-        console.log("hideSplashScreen error", e);
+          resolve(freeWorker);
+        } catch (e) {
+          console.log("hideSplashScreen error", e);
+          reject(e);
+        }
       });
     }
 

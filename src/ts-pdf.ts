@@ -1089,6 +1089,7 @@ export class TsPdfViewer {
   };
 
   private onViewerKeyDown = (event: KeyboardEvent) => {
+    console.log("onViewerKeyDown", event.code);
     switch (event.code) {
       case "KeyO":
         if (event.ctrlKey && event.altKey) {
@@ -1158,19 +1159,22 @@ export class TsPdfViewer {
         break;
       case "ArrowLeft":
         event.preventDefault();
-        this.moveToPrevPage();
+        this._viewer.zoomOut()
         break;
       case "ArrowRight":
         event.preventDefault();
-        this.moveToNextPage();
-        break;
-      case "ArrowUp":
-        event.preventDefault();
         this._viewer.zoomIn();
         break;
-      case "ArrowDown":
+      case "ArrowUp":
+      case "PageUp":
         event.preventDefault();
-        this._viewer.zoomOut();
+        this.moveToPrevPage();
+        ;        
+        break;
+      case "ArrowDown":
+      case "PageDown":
+        event.preventDefault();
+        this.moveToNextPage();        
         break;
       case "Comma":
         event.preventDefault();

@@ -2458,7 +2458,8 @@ class BgDataParser {
             }, 20);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+            return null;
+        });
         return await freeWorkerPromise;
     }
     static returnWorkerToPool(worker) {
@@ -2480,7 +2481,7 @@ class BgDataParser {
             worker.postMessage({ name: "data-set", bytes: buffer }, [buffer]);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });;
+        });
         try {
             await workerPromise;
         }
@@ -2504,7 +2505,8 @@ class BgDataParser {
             worker.postMessage({ name: "data-reset" });
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });;
+            return null;
+        });
         try {
             const buffer = await workerPromise;
             return buffer;
@@ -2666,22 +2668,26 @@ class BgDataParser {
         }
         if (!this._workerPromise) {
             this._workerPromise = new Promise(async (resolve, reject) => {
-                const dataBuffer = this._data;
-                const freeWorker = await BgDataParser.getFreeWorkerFromPoolAsync();
-                await BgDataParser.transferDataToWorker(freeWorker, dataBuffer);
-                freeWorker.onmessage = this.onWorkerMessage;
-                freeWorker.onerror = this.onWorkerError;
-                const workerReleaseInterval = setInterval(async () => {
-                    if (this._commandsInProgress > 0 || this._workerOnMessageHandlers.size) {
-                        return;
-                    }
-                    clearInterval(workerReleaseInterval);
-                    this._prevWorkerReleasePromise = this.releaseWorkerAsync(freeWorker);
-                }, 50);
-                resolve(freeWorker);
-            }).catch(e => {
-                console.log("hideSplashScreen error", e);
-              });
+                try {
+                    const dataBuffer = this._data;
+                    const freeWorker = await BgDataParser.getFreeWorkerFromPoolAsync();
+                    await BgDataParser.transferDataToWorker(freeWorker, dataBuffer);
+                    freeWorker.onmessage = this.onWorkerMessage;
+                    freeWorker.onerror = this.onWorkerError;
+                    const workerReleaseInterval = setInterval(async () => {
+                        if (this._commandsInProgress > 0 || this._workerOnMessageHandlers.size) {
+                            return;
+                        }
+                        clearInterval(workerReleaseInterval);
+                        this._prevWorkerReleasePromise = this.releaseWorkerAsync(freeWorker);
+                    }, 50);
+                    resolve(freeWorker);
+                }
+                catch (e) {
+                    console.log("hideSplashScreen error", e);
+                    reject(e);
+                }
+            });
         }
         const worker = await this._workerPromise;
         return worker;
@@ -2706,7 +2712,8 @@ class BgDataParser {
             this._workerOnMessageHandlers.add(onMessage);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+            return null;
+        });
         worker.postMessage({ id: commandId, name: commandName, args: commandArgs });
         const result = await commandResultPromise;
         this._commandsInProgress--;
@@ -6483,7 +6490,8 @@ class ImageStream extends PdfStream {
                 });
             }).catch(e => {
                 console.log("hideSplashScreen error", e);
-              });
+                return null;
+            });
             const imageUrl = await urlPromise;
             this._imageUrl = imageUrl;
             return imageUrl;
@@ -14036,7 +14044,7 @@ class AppearanceStreamRenderer {
             }, 0);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+        });
         const clonedSvg = this.createSvgElement();
         this.addDescriptionDataAttribute(clonedSvg, "astream-text-selection-helper");
         const clonedPath = svgText.cloneNode(true);
@@ -14877,7 +14885,7 @@ class AnnotationDict extends PdfDict {
             }, 0);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+        });
         return this.lastRenderResult;
     }
     async renderApStreamAsync() {
@@ -15315,7 +15323,7 @@ class AnnotationDict extends PdfDict {
             resolve();
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+        });
         await this._transformationPromise;
     }
     renderAppearance() {
@@ -29478,7 +29486,8 @@ class Viewer {
             this._dialogClose = () => resolve(null);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+            return null;
+        });
         const result = await textPromise;
         this._dialogClose = null;
         dialog.remove();
@@ -30460,10 +30469,12 @@ class TsPdfViewer {
             dialog.querySelector(".password-cancel").addEventListener("click", cancel);
         }).catch(e => {
             console.log("hideSplashScreen error", e);
-          });
+            return null;
+        });
         return passwordPromise;
     };
     onViewerKeyDown = (event) => {
+        console.log("onViewerKeyDown", event.code);
         switch (event.code) {
             case "KeyO":
                 if (event.ctrlKey && event.altKey) {
@@ -30536,19 +30547,21 @@ class TsPdfViewer {
                 break;
             case "ArrowLeft":
                 event.preventDefault();
-                this.moveToPrevPage();
+                this._viewer.zoomOut();
                 break;
             case "ArrowRight":
                 event.preventDefault();
-                this.moveToNextPage();
-                break;
-            case "ArrowUp":
-                event.preventDefault();
                 this._viewer.zoomIn();
                 break;
-            case "ArrowDown":
+            case "ArrowUp":
+            case "PageUp":
                 event.preventDefault();
-                this._viewer.zoomOut();
+                this.moveToPrevPage();
+                break;
+            case "ArrowDown":
+            case "PageDown":
+                event.preventDefault();
+                this.moveToNextPage();
                 break;
             case "Comma":
                 event.preventDefault();
