@@ -1089,7 +1089,7 @@ export class TsPdfViewer {
   };
 
   private onViewerKeyDown = (event: KeyboardEvent) => {
-    console.log("onViewerKeyDown", event.code);
+    // console.log("onViewerKeyDown", event.code);
     switch (event.code) {
       case "KeyO":
         if (event.ctrlKey && event.altKey) {
